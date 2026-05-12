@@ -1,11 +1,15 @@
-import styles from './App.module.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import Onboarding from './pages/Onboarding/Onboarding'
+import Counter from './pages/Counter/Counter'
 
 function App() {
   return (
-    <div className={styles.app}>
-      <h1>Count Me In</h1>
-      <p>Your cozy knitting companion</p>
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Onboarding />} />
+        <Route path="/counter" element={<Counter />} />
+      </Routes>
+    </BrowserRouter>
   )
 }
 
