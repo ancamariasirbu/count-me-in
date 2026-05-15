@@ -7,7 +7,7 @@
   max-width: 480px;
   margin: 0 auto;
   width: 100%;
-  gap: 18vh;
+  gap: 22vh;
 }
 
 .header {
@@ -20,7 +20,7 @@
 .projectRow {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 14px;
 }
 
 .projectName {
@@ -47,18 +47,6 @@
   gap: 8px;
 }
 
-.count {
-  font-size: 96px;
-  font-weight: 700;
-  line-height: 1;
-  color: var(--text);
-}
-
-.countLabel {
-  font-size: 16px;
-  color: var(--text-muted);
-}
-
 .footer {
   display: flex;
   flex-direction: column;
@@ -82,22 +70,37 @@
 }
 
 .secondaryBtn:hover {
-  border-color: var(--text-muted);
+  border-color: var(--accent);
   color: var(--text);
 }
 
 .incrementBtn {
-  width: 100%;
-  padding: 20px;
+  width: 200px;
+  height: 123px;
   border: none;
-  border-radius: 12px;
+  border-radius: 24px;
   background: var(--accent);
-  color: white;
-  font-size: 20px;
-  font-weight: 600;
+  color: var(--bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
   transition: opacity 0.2s;
 }
 
 .incrementBtn:hover {
   opacity: 0.9;
+}
+
+.btnCount {
+  font-size: 40px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.btnLabel {
+  font-size: 12px;
+  font-weight: 500;
+  opacity: 0.85;
 }

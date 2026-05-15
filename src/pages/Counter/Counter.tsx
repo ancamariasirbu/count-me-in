@@ -25,8 +25,10 @@ function Counter() {
       </header>
 
       <main className={styles.main}>
-        <p className={styles.count}>0</p>
-        <p className={styles.countLabel}>rows knitted</p>
+        <button className={styles.incrementBtn}>
+          <span className={styles.btnCount}>0</span>
+          <span className={styles.btnLabel}>rows</span>
+        </button>
       </main>
 
       <footer className={styles.footer}>
@@ -34,7 +36,6 @@ function Counter() {
           <button className={styles.secondaryBtn}>Pause</button>
           <button className={styles.secondaryBtn}>Reset</button>
         </div>
-        <button className={styles.incrementBtn}>+ Row</button>
       </footer>
     </div>
   )
