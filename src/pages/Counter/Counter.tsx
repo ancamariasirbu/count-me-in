@@ -1,8 +1,41 @@
+import { useLocation } from 'react-router-dom'
+import styles from './Counter.module.css'
+
+interface OnboardingState {
+  projectName: string
+  sessionNumber: string
+}
+
 function Counter() {
+  const { state } = useLocation()
+  const { projectName, sessionNumber } = (state as OnboardingState) ?? {}
+
+  const displayName = projectName || 'My Project'
+  const displaySession = sessionNumber || '1'
+
   return (
-    <div>
-      <h1>Counter</h1>
-      <p>Coming soon.</p>
+    <div className={styles.page}>
+      <header className={styles.header}>
+        <div className={styles.projectRow}>
+          <span className={styles.dot}>·</span>
+          <span className={styles.projectName}>{displayName}</span>
+          <span className={styles.dot}>·</span>
+        </div>
+        <span className={styles.session}>Session {displaySession}</span>
+      </header>
+
+      <main className={styles.main}>
+        <p className={styles.count}>0</p>
+        <p className={styles.countLabel}>rows knitted</p>
+      </main>
+
+      <footer className={styles.footer}>
+        <div className={styles.secondaryActions}>
+          <button className={styles.secondaryBtn}>Pause</button>
+          <button className={styles.secondaryBtn}>Reset</button>
+        </div>
+        <button className={styles.incrementBtn}>+ Row</button>
+      </footer>
     </div>
   )
 }
