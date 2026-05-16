@@ -49,6 +49,10 @@ button:focus {
   outline: none;
 }
 
+button:disabled {
+  cursor: default;
+}
+
 img, svg {
   display: block;
 }

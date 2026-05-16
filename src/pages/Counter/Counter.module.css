@@ -66,7 +66,24 @@
   background: transparent;
   color: var(--text-muted);
   font-size: 15px;
-  transition: border-color 0.2s, color 0.2s;
+  transition: border-color 0.3s, color 0.3s, background 0.3s, opacity 0.2s;
+}
+
+.resumeBtn {
+  background: var(--accent);
+  color: var(--bg);
+  border-color: var(--accent);
+}
+
+.resumeBtn:hover {
+  opacity: 0.9;
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.resumeBtn:active {
+  transform: scale(0.99);
+  box-shadow: inset 0 1px 3px rgba(74, 55, 40, 0.35);
 }
 
 .secondaryBtn:hover {
@@ -74,7 +91,7 @@
   color: var(--text);
 }
 
-.secondaryBtn:active {
+.secondaryBtn:active:not(:disabled) {
   transform: scale(0.99);
   box-shadow: inset 0 1px 3px var(--accent-light);
 }
@@ -94,11 +111,11 @@
   transition: opacity 0.2s;
 }
 
-.incrementBtn:hover {
+.incrementBtn:hover:not(:disabled) {
   opacity: 0.9;
 }
 
-.incrementBtn:active {
+.incrementBtn:active:not(:disabled) {
   transform: scale(0.995);
   box-shadow: inset 0 2px 6px rgba(74, 55, 40, 0.35);
 }
@@ -120,6 +137,60 @@
   opacity: 0.85;
 }
 
+.paused {
+  opacity: 0.4;
+}
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(74, 55, 40, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  max-width: 340px;
+  width: 100%;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin: 24px;
+}
+
+.modal p {
+  color: var(--text);
+  line-height: 1.6;
+}
+
+.modalActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.resetBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 15px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+
+.resetBtn:hover {
+  opacity: 0.9;
+}
+
 .adjustRow {
   display: flex;
   width: 170px;
@@ -137,12 +208,12 @@
   transition: border-color 0.2s, color 0.2s;
 }
 
-.adjustBtn:hover {
+.adjustBtn:hover:not(:disabled) {
   border-color: var(--accent);
   color: var(--text);
 }
 
-.adjustBtn:active {
+.adjustBtn:active:not(:disabled) {
   transform: scale(0.99);
   box-shadow: inset 0 1px 3px var(--accent-light);
 }

@@ -17,14 +17,42 @@ function Counter() {
   const [count, setCount] = useState(0)
   const [timestamps, setTimestamps] = useState<number[]>([])
   const [isPressing, setIsPressing] = useState(false)
+  const [isPaused, setIsPaused] = useState(false)
+  const [pauseStart, setPauseStart] = useState<number | null>(null)
+  const [totalPausedMs, setTotalPausedMs] = useState(0)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   function increment() {
+    if (isPaused) return
     setCount(c => c + 1)
     setTimestamps(ts => [...ts, Date.now()])
   }
 
   function decrement() {
+    if (isPaused) return
     setCount(c => Math.max(0, c - 1))
+  }
+
+  function handlePause() {
+    if (!isPaused) {
+      setIsPaused(true)
+      setPauseStart(Date.now())
+    } else {
+      setIsPaused(false)
+      if (pauseStart !== null) {
+        setTotalPausedMs(ms => ms + (Date.now() - pauseStart))
+      }
+      setPauseStart(null)
+    }
+  }
+
+  function confirmReset() {
+    setCount(0)
+    setTimestamps([])
+    setTotalPausedMs(0)
+    setPauseStart(null)
+    setIsPaused(false)
+    setShowResetConfirm(false)
   }
 
   useEffect(() => {
@@ -46,7 +74,7 @@ function Counter() {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [])
+  }, [isPaused])
 
   return (
     <div className={styles.page}>
@@ -60,22 +88,46 @@ function Counter() {
       </header>
 
       <main className={styles.main}>
-        <button className={`${styles.incrementBtn} ${isPressing ? styles.pressing : ''}`} onClick={increment}>
+        <button
+          className={`${styles.incrementBtn} ${isPressing ? styles.pressing : ''} ${isPaused ? styles.paused : ''}`}
+          onClick={increment}
+          disabled={isPaused}
+        >
           <span className={styles.btnCount}>{count}</span>
           <span className={styles.btnLabel}>rows</span>
         </button>
         <div className={styles.adjustRow}>
-          <button className={styles.adjustBtn} onClick={decrement}>−</button>
-          <button className={styles.adjustBtn} onClick={increment}>+</button>
+          <button className={`${styles.adjustBtn} ${isPaused ? styles.paused : ''}`} onClick={decrement} disabled={isPaused}>−</button>
+          <button className={`${styles.adjustBtn} ${isPaused ? styles.paused : ''}`} onClick={increment} disabled={isPaused}>+</button>
         </div>
       </main>
 
       <footer className={styles.footer}>
         <div className={styles.secondaryActions}>
-          <button className={styles.secondaryBtn}>Pause</button>
-          <button className={styles.secondaryBtn}>Reset</button>
+          <button className={`${styles.secondaryBtn} ${isPaused ? styles.resumeBtn : ''}`} onClick={handlePause}>
+            {isPaused ? 'Resume' : 'Pause'}
+          </button>
+          <button className={styles.secondaryBtn} onClick={() => setShowResetConfirm(true)}>
+            Reset
+          </button>
         </div>
       </footer>
+
+      {showResetConfirm && (
+        <div className={styles.overlay}>
+          <div className={styles.modal}>
+            <p>This will clear your row count and all timing data. Are you sure?</p>
+            <div className={styles.modalActions}>
+              <button className={styles.secondaryBtn} onClick={() => setShowResetConfirm(false)}>
+                Cancel
+              </button>
+              <button className={styles.resetBtn} onClick={confirmReset}>
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
