@@ -74,6 +74,11 @@
   color: var(--text);
 }
 
+.secondaryBtn:active {
+  transform: scale(0.99);
+  box-shadow: inset 0 1px 3px var(--accent-light);
+}
+
 .incrementBtn {
   width: 200px;
   height: 123px;
@@ -93,6 +98,16 @@
   opacity: 0.9;
 }
 
+.incrementBtn:active {
+  transform: scale(0.995);
+  box-shadow: inset 0 2px 6px rgba(74, 55, 40, 0.35);
+}
+
+.pressing {
+  transform: scale(0.995);
+  box-shadow: inset 0 2px 6px rgba(74, 55, 40, 0.35);
+}
+
 .btnCount {
   font-size: 40px;
   font-weight: 700;
@@ -103,4 +118,31 @@
   font-size: 12px;
   font-weight: 500;
   opacity: 0.85;
+}
+
+.adjustRow {
+  display: flex;
+  width: 170px;
+  gap: 16px;
+}
+
+.adjustBtn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: 18px;
+  transition: border-color 0.2s, color 0.2s;
+}
+
+.adjustBtn:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.adjustBtn:active {
+  transform: scale(0.99);
+  box-shadow: inset 0 1px 3px var(--accent-light);
 }

@@ -45,6 +45,10 @@ button {
   cursor: pointer;
 }
 
+button:focus {
+  outline: none;
+}
+
 img, svg {
   display: block;
 }
