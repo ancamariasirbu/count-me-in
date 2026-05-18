@@ -1,25 +1,11 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import styles from './Counter.module.css'
+import { formatLastRow, formatAvg } from '../../utils/formatters'
 
 interface OnboardingState {
   projectName: string
   sessionNumber: string
-}
-
-function formatLastRow(ms: number): string {
-  const s = Math.floor(ms / 1000)
-  if (s < 60) return 'just now'
-  const m = Math.floor(s / 60)
-  if (m < 60) return `${m} min ago`
-  return `${Math.floor(m / 60)}h ago`
-}
-
-function formatAvg(ms: number): string {
-  const s = Math.floor(ms / 1000)
-  if (s < 60) return `${s}s`
-  const m = (ms / 60000).toFixed(1)
-  return `${m} min`
 }
 
 function Counter() {
