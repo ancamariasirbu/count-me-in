@@ -16,69 +16,63 @@ function Counter() {
   const displaySession = sessionNumber || '1'
 
   const [hasStarted, setHasStarted] = useState(false)
-  const [count, setCount] = useState(0)
+  const [rowCount, setRowCount] = useState(0)
   const [isPressing, setIsPressing] = useState(false)
   const [isPaused, setIsPaused] = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
 
   // Active-time tracking: all timing excludes paused time
-  const [activeTimestamps, setActiveTimestamps] = useState<number[]>([])
-  const [totalActiveMsBefore, setTotalActiveMsBefore] = useState(0)
-  const [activePeriodStart, setActivePeriodStart] = useState<number | null>(null)
+  const [rowTimestamp, setRowTimestamp] = useState<number[]>([])
+  const [storedKnittingTime, setStoredKnittingTime] = useState(0)
+  const [clockTimestamp, setClockTimestamp] = useState<number | null>(null)
   const [now, setNow] = useState(Date.now())
 
-  const currentActiveMs =
-    activePeriodStart !== null
-      ? totalActiveMsBefore + (now - activePeriodStart)
-      : totalActiveMsBefore
+  const totalKnittingTime =
+    clockTimestamp !== null
+      ? storedKnittingTime + (now - clockTimestamp)
+      : storedKnittingTime
 
-  const timeSinceLastMs =
-    activeTimestamps.length > 0
-      ? currentActiveMs - activeTimestamps[activeTimestamps.length - 1]
+  const timeSinceLastRow =
+    rowTimestamp.length > 0
+      ? totalKnittingTime - rowTimestamp[rowTimestamp.length - 1]
       : null
 
-  const avgMs =
-    activeTimestamps.length >= 2
-      ? (activeTimestamps[activeTimestamps.length - 1] - activeTimestamps[0]) /
-        (activeTimestamps.length - 1)
+  const averageTimePerRow =
+    rowTimestamp.length >= 2
+      ? (rowTimestamp[rowTimestamp.length - 1] - rowTimestamp[0]) /
+        (rowTimestamp.length - 1)
       : null
 
-  const showLastRow = count >= 1 && timeSinceLastMs !== null
-  const showAvg = count >= 3 && avgMs !== null
-  const avgIsEstimated = count < 5
-
-  function getCurrentActiveMs() {
-    if (activePeriodStart === null) return totalActiveMsBefore
-    return totalActiveMsBefore + (Date.now() - activePeriodStart)
-  }
+  const showLastRow = rowCount >= 1 && timeSinceLastRow !== null
+  const showAvg = rowCount >= 3 && averageTimePerRow !== null
+  const avgIsEstimated = rowCount < 5
 
   function handleStart() {
     setHasStarted(true)
-    setActivePeriodStart(Date.now())
+    setClockTimestamp(Date.now())
   }
 
   function increment() {
     if (!hasStarted || isPaused) return
-    const activeMs = getCurrentActiveMs()
-    setCount(c => c + 1)
-    setActiveTimestamps(ts => [...ts, activeMs])
+    setRowCount(c => c + 1)
+    setRowTimestamp(ts => [...ts, totalKnittingTime])
   }
 
   function decrement() {
     if (isPaused) return
-    setCount(c => Math.max(0, c - 1))
+    setRowCount(c => Math.max(0, c - 1))
   }
 
   function handlePause() {
     if (!isPaused) {
-      if (activePeriodStart !== null) {
-        setTotalActiveMsBefore(ms => ms + (Date.now() - activePeriodStart!))
-        setActivePeriodStart(null)
+      if (clockTimestamp !== null) {
+        setStoredKnittingTime(ms => ms + (Date.now() - clockTimestamp))
+        setClockTimestamp(null)
       }
       setIsPaused(true)
     } else {
-      if (activeTimestamps.length > 0) {
-        setActivePeriodStart(Date.now())
+      if (rowTimestamp.length > 0) {
+        setClockTimestamp(Date.now())
       }
       setIsPaused(false)
     }
@@ -86,20 +80,20 @@ function Counter() {
 
   function confirmReset() {
     setHasStarted(false)
-    setCount(0)
-    setActiveTimestamps([])
-    setTotalActiveMsBefore(0)
-    setActivePeriodStart(null)
+    setRowCount(0)
+    setRowTimestamp([])
+    setStoredKnittingTime(0)
+    setClockTimestamp(null)
     setIsPaused(false)
     setShowResetConfirm(false)
   }
 
   // Ticker: only runs when there is an active period
   useEffect(() => {
-    if (isPaused || activePeriodStart === null) return
+    if (isPaused || clockTimestamp === null) return
     const interval = setInterval(() => setNow(Date.now()), 1000)
     return () => clearInterval(interval)
-  }, [isPaused, activePeriodStart])
+  }, [isPaused, clockTimestamp])
 
   // Ref so the keyboard handler always calls the latest increment
   const incrementRef = useRef(increment)
@@ -147,7 +141,7 @@ function Counter() {
         >
           {hasStarted ? (
             <>
-              <span className={styles.btnCount}>{count}</span>
+              <span className={styles.btnCount}>{rowCount}</span>
               <span className={styles.btnLabel}>rows</span>
             </>
           ) : (
@@ -164,7 +158,7 @@ function Counter() {
         <div className={styles.secondaryActions}>
           <div className={styles.btnGroup}>
             <span className={styles.statLeft}>
-              {showAvg ? <><strong>Average time/row:</strong> {avgIsEstimated ? '~ ' : ''}{formatAvg(avgMs!)}</> : ' '}
+              {showAvg ? <><strong>Average time/row:</strong> {avgIsEstimated ? '~ ' : ''}{formatAvg(averageTimePerRow!)}</> : ' '}
             </span>
             <button
               className={`${styles.secondaryBtn} ${isPaused ? styles.resumeBtn : ''}`}
@@ -176,7 +170,7 @@ function Counter() {
           </div>
           <div className={styles.btnGroup}>
             <span className={styles.statRight}>
-              {showLastRow ? <><strong>Last row:</strong> {formatLastRow(timeSinceLastMs!)}</> : ' '}
+              {showLastRow ? <><strong>Last row:</strong> {formatLastRow(timeSinceLastRow!)}</> : ' '}
             </span>
             <button
               className={styles.secondaryBtn}
