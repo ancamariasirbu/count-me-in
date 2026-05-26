@@ -116,9 +116,7 @@ function Counter() {
       }
       setIsPaused(true)
     } else {
-      if (rowTimestampsMs.length > 0) {
-        setClockTimestamp(Date.now())
-      }
+      setClockTimestamp(Date.now())
       setIsPaused(false)
     }
   }
@@ -205,7 +203,7 @@ function Counter() {
         <div className={styles.secondaryActions}>
           <div className={styles.btnGroup}>
             <span className={styles.statLeft}>
-              {showAvg ? <><strong>Average time/row:</strong> {avgIsEstimated ? '~ ' : ''}{formatAvg(averageTimePerRow!)}</> : ' '}
+              <strong>Average time/row:</strong> {showAvg ? <>{avgIsEstimated ? '~ ' : ''}{formatAvg(averageTimePerRow!)}</> : 'n/a'}
             </span>
             <button
               className={`${styles.secondaryBtn} ${isPaused ? styles.resumeBtn : ''}`}
@@ -217,7 +215,7 @@ function Counter() {
           </div>
           <div className={styles.btnGroup}>
             <span className={styles.statRight}>
-              {showLastRow ? <><strong>Last row:</strong> {formatLastRow(timeSinceLastRow!)}</> : ' '}
+              <strong>Last row:</strong> {showLastRow ? formatLastRow(timeSinceLastRow!) : 'n/a'}
             </span>
             <button
               className={styles.secondaryBtn}
