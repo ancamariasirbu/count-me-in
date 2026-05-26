@@ -6,11 +6,12 @@ import { formatLastRow, formatAvg } from '../../utils/formatters'
 interface OnboardingState {
   projectName: string
   sessionNumber: string
+  anomalyAlertsEnabled: boolean
 }
 
 function Counter() {
   const { state } = useLocation()
-  const { projectName, sessionNumber } = (state as OnboardingState) ?? {}
+  const { projectName, sessionNumber, anomalyAlertsEnabled } = (state as OnboardingState) ?? {}
 
   const displayName = projectName || 'My Project'
   const displaySession = sessionNumber || '1'
@@ -21,7 +22,7 @@ function Counter() {
   const [isPaused, setIsPaused] = useState(false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [showAnomalyAlert, setShowAnomalyAlert] = useState(false)
-  const [anomalyAlertDisabled, setAnomalyAlertDisabled] = useState(false)
+  const [anomalyAlertDisabled, setAnomalyAlertDisabled] = useState(!(anomalyAlertsEnabled ?? true))
   const [selectedAnomalyOption, setSelectedAnomalyOption] = useState<'yes' | 'no' | 'break' | null>(null)
 
   // Active-time tracking: all timing excludes paused time
@@ -228,8 +229,7 @@ function Counter() {
         </div>
       </footer>
 
-      {hasStarted && (
-        <button
+      <button
           className={`${styles.alertsMutedBtn} ${anomalyAlertDisabled ? styles.alertsMutedOff : styles.alertsMutedOn}`}
           onClick={() => setAnomalyAlertDisabled(v => !v)}
           aria-label="toggle missed row alerts"
@@ -254,7 +254,6 @@ function Counter() {
               : <>missed row alerts are on <strong>·</strong> click to disable</>}
           </span>
         </button>
-      )}
 
       {showAnomalyAlert && (
         <div className={styles.overlay}>

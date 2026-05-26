@@ -18,6 +18,7 @@ const defaultValues = {
   garmentType: '',
   size: '',
   stitchPattern: ['Not sure'],
+  anomalyAlertsEnabled: true,
 }
 
 function isFormEmpty(form: typeof defaultValues) {
@@ -49,7 +50,7 @@ function Onboarding() {
     }
   }
 
-  function handleSubmit(e: React.FormEvent) {
+  function handleSubmit(e: React.SyntheticEvent) {
     e.preventDefault()
     if (isFormEmpty(form)) {
       setShowConfirm(true)
@@ -135,6 +136,24 @@ function Onboarding() {
             />
           </div>
 
+          <div className={styles.toggleRow}>
+            <div className={styles.toggleInfo}>
+              <span className={styles.toggleLabel}>Missed row alerts</span>
+              <span className={styles.tooltipAnchor}>
+                ?
+                <span className={styles.tooltip}>
+                  Tracks your average time/row to detect missed rows. Tip: when switching from a small section to a larger section (e.g. joining in the round) it's best to reset the average.
+                </span>
+              </span>
+            </div>
+            <button
+              type="button"
+              className={`${styles.pillToggle} ${form.anomalyAlertsEnabled ? styles.pillToggleOn : ''}`}
+              onClick={() => setForm({ ...form, anomalyAlertsEnabled: !form.anomalyAlertsEnabled })}
+              aria-label="toggle missed row alerts"
+            />
+          </div>
+
           <div className={styles.field}>
             <label>Stitch pattern</label>
             <div className={styles.checkboxGroup}>
@@ -171,7 +190,7 @@ function Onboarding() {
               <button className={styles.skip} onClick={() => setShowConfirm(false)}>
                 Back
               </button>
-              <button className={styles.submit} onClick={() => navigate('/counter', { state: defaultValues })}>
+              <button className={styles.submit} onClick={() => navigate('/counter', { state: form })}>
                 Continue
               </button>
             </div>
