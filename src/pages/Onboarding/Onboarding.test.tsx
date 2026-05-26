@@ -59,6 +59,7 @@ describe('skip flow', () => {
         garmentType: '',
         size: '',
         stitchPattern: ['Not sure'],
+        anomalyAlertsEnabled: true,
       },
     })
   })
@@ -95,6 +96,7 @@ describe('empty form submission', () => {
         garmentType: '',
         size: '',
         stitchPattern: ['Not sure'],
+        anomalyAlertsEnabled: true,
       },
     })
   })

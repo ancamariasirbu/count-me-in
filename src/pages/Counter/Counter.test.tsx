@@ -236,9 +236,9 @@ describe('anomaly alert', () => {
 })
 
 describe('bell icon', () => {
-  it('is not visible before session starts', () => {
+  it('is visible before session starts', () => {
     renderCounter()
-    expect(screen.queryByRole('button', { name: 'toggle missed row alerts' })).not.toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'toggle missed row alerts' })).toBeInTheDocument()
   })
 
   it('is visible after session starts', () => {

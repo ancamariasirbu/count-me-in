@@ -1,6 +1,7 @@
 export function formatLastRow(ms: number): string {
   const s = Math.floor(ms / 1000)
-  if (s < 60) return 'just now'
+  if (s < 30) return 'just now'
+  if (s < 60) return '30 sec ago'
   const m = Math.floor(s / 60)
   if (m < 60) return `${m} min ago`
   return `${Math.floor(m / 60)}h ago`

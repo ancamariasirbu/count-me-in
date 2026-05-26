@@ -2,10 +2,14 @@ import { describe, it, expect } from 'vitest'
 import { formatLastRow, formatAvg } from './formatters'
 
 describe('formatLastRow', () => {
-  it('returns "just now" for anything under 60 seconds', () => {
+  it('returns "just now" for under 30 seconds', () => {
     expect(formatLastRow(0)).toBe('just now')
-    expect(formatLastRow(30000)).toBe('just now')
-    expect(formatLastRow(59999)).toBe('just now')
+    expect(formatLastRow(29999)).toBe('just now')
+  })
+
+  it('returns "30 sec ago" for 30–59 seconds', () => {
+    expect(formatLastRow(30000)).toBe('30 sec ago')
+    expect(formatLastRow(59999)).toBe('30 sec ago')
   })
 
   it('returns minutes for 1–59 minutes', () => {
