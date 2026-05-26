@@ -105,8 +105,9 @@ function Counter() {
   }
 
   function decrement() {
-    if (isPaused) return
-    setRowCount(c => Math.max(0, c - 1))
+    if (isPaused || rowCount === 0) return
+    setRowCount(c => c - 1)
+    setRowTimestampsMs(ts => ts.slice(0, -1))
   }
 
   function handlePause() {
