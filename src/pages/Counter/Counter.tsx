@@ -23,7 +23,8 @@ function Counter() {
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [showAnomalyAlert, setShowAnomalyAlert] = useState(false)
   const [anomalyAlertDisabled, setAnomalyAlertDisabled] = useState(!(anomalyAlertsEnabled ?? true))
-  const [selectedAnomalyOption, setSelectedAnomalyOption] = useState<'yes' | 'no' | 'break' | null>(null)
+  const [consecutiveSlowRows, setConsecutiveSlowRows] = useState(0)
+  const [selectedAnomalyOption, setSelectedAnomalyOption] = useState<'yes' | 'no' | 'break' | 'reset' | null>(null)
 
   // Active-time tracking: all timing excludes paused time
   const [rowTimestampsMs, setRowTimestampsMs] = useState<number[]>([])
@@ -65,9 +66,11 @@ function Counter() {
       timeSinceLastRow !== null &&
       timeSinceLastRow > 2 * averageTimePerRow
     ) {
+      setConsecutiveSlowRows(c => c + 1)
       setShowAnomalyAlert(true)
       return
     }
+    setConsecutiveSlowRows(0)
     setRowCount(c => c + 1)
     setRowTimestampsMs(ts => [...ts, totalKnittingTime])
   }
@@ -78,6 +81,7 @@ function Counter() {
     const missedRowTimestamp = lastRowTimestamp + gap / 2
     setRowTimestampsMs(ts => [...ts, missedRowTimestamp, totalKnittingTime])
     setRowCount(c => c + 2)
+    setConsecutiveSlowRows(0)
     setShowAnomalyAlert(false)
     setSelectedAnomalyOption(null)
   }
@@ -94,6 +98,15 @@ function Counter() {
     setRowCount(c => c + 1)
     setStoredTotalKnittingTime(lastRowTimestamp)
     setClockTimestamp(Date.now())
+    setConsecutiveSlowRows(0)
+    setShowAnomalyAlert(false)
+    setSelectedAnomalyOption(null)
+  }
+
+  function handleAnomalyReset() {
+    setRowCount(c => c + 1)
+    setRowTimestampsMs([])
+    setConsecutiveSlowRows(0)
     setShowAnomalyAlert(false)
     setSelectedAnomalyOption(null)
   }
@@ -102,6 +115,7 @@ function Counter() {
     if (selectedAnomalyOption === 'yes') handleAnomalyYes()
     else if (selectedAnomalyOption === 'no') handleAnomalyNo()
     else if (selectedAnomalyOption === 'break') handleAnomalyBreak()
+    else if (selectedAnomalyOption === 'reset') handleAnomalyReset()
   }
 
   function decrement() {
@@ -133,6 +147,7 @@ function Counter() {
     setShowResetConfirm(false)
     setShowAnomalyAlert(false)
     setSelectedAnomalyOption(null)
+    setConsecutiveSlowRows(0)
   }
 
   // Ticker: only runs when there is an active period
@@ -259,27 +274,70 @@ function Counter() {
       {showAnomalyAlert && (
         <div className={styles.overlay}>
           <div className={styles.modal}>
-            <p className={styles.anomalyHeader}>Have you missed a row?</p>
+            <p className={styles.anomalyHeader}>
+              {consecutiveSlowRows >= 2
+                ? 'Did your rows become longer? If so, try resetting your average.'
+                : 'Have you missed a row?'}
+            </p>
             <div className={styles.anomalyActions}>
-              <button
-                className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'yes' ? styles.anomalyBtnSelected : ''}`}
-                onClick={() => setSelectedAnomalyOption('yes')}
-              >
-                Yes
-              </button>
-              <button
-                className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'no' ? styles.anomalyBtnSelected : ''}`}
-                onClick={() => setSelectedAnomalyOption('no')}
-              >
-                No
-              </button>
-              <button
-                className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'break' ? styles.anomalyBtnSelected : ''}`}
-                onClick={() => setSelectedAnomalyOption('break')}
-              >
-                <span>I took a break</span>
-                <span className={styles.anomalyBtnSubtext}>(do not include in the average time per row)</span>
-              </button>
+              {consecutiveSlowRows >= 2 ? (
+                <>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'reset' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('reset')}
+                  >
+                    Yes, reset my average
+                  </button>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'no' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('no')}
+                  >
+                    No
+                  </button>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'break' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('break')}
+                  >
+                    <span>I took a break</span>
+                    <span className={styles.anomalyBtnSubtext}>(do not include in the average time per row)</span>
+                  </button>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'yes' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('yes')}
+                  >
+                    No, I just missed a row
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'yes' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('yes')}
+                  >
+                    Yes
+                  </button>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'no' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('no')}
+                  >
+                    No
+                  </button>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'break' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('break')}
+                  >
+                    <span>I took a break</span>
+                    <span className={styles.anomalyBtnSubtext}>(do not include in the average time per row)</span>
+                  </button>
+                  <button
+                    className={`${styles.anomalyBtn} ${selectedAnomalyOption === 'reset' ? styles.anomalyBtnSelected : ''}`}
+                    onClick={() => setSelectedAnomalyOption('reset')}
+                  >
+                    <span>Reset average</span>
+                    <span className={styles.anomalyBtnSubtext}>(start tracking from scratch)</span>
+                  </button>
+                </>
+              )}
             </div>
             <div className={`${styles.pillToggleRow} ${selectedAnomalyOption === null ? styles.pillToggleRowDisabled : ''}`}>
               <span className={styles.pillToggleLabel}>don't ask me again</span>
