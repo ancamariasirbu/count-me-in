@@ -226,24 +226,56 @@ function Counter() {
     return () => clearInterval(interval)
   }, [isPaused, clockTimestamp])
 
-  // Ref so the keyboard handler always calls the latest increment
+  // Refs so the keyboard handler always calls the latest versions of these functions
   const incrementRef = useRef(increment)
+  const handlePauseRef = useRef(handlePause)
+  const lastSpacePressRef = useRef<number>(0)
+  const pendingIncrementRef = useRef<boolean>(false)
+  const keyupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
     incrementRef.current = increment
+    handlePauseRef.current = handlePause
   })
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       const tag = (e.target as HTMLElement).tagName
-      if (e.code === 'Space' && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+      if (e.code === 'Space' && !e.repeat && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
         e.preventDefault()
-        incrementRef.current()
-        setIsPressing(true)
+        const now = Date.now()
+        if (now - lastSpacePressRef.current < 300) {
+          // Double-tap: cancel any pending increment and pause/resume instead
+          if (keyupTimerRef.current !== null) {
+            clearTimeout(keyupTimerRef.current)
+            keyupTimerRef.current = null
+          }
+          pendingIncrementRef.current = false
+          setIsPressing(false)
+          handlePauseRef.current()
+          lastSpacePressRef.current = 0
+        } else {
+          // First tap: mark increment as pending, fire it on keyUp
+          lastSpacePressRef.current = now
+          pendingIncrementRef.current = true
+          setIsPressing(true)
+        }
       }
     }
     function handleKeyUp(e: KeyboardEvent) {
-      if (e.code === 'Space') {
+      const tag = (e.target as HTMLElement).tagName
+      if (e.code === 'Space' && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
+        e.preventDefault()
         setIsPressing(false)
+        if (pendingIncrementRef.current) {
+          // Short delay so a second keydown arriving quickly can still cancel this increment
+          keyupTimerRef.current = setTimeout(() => {
+            if (pendingIncrementRef.current) {
+              pendingIncrementRef.current = false
+              incrementRef.current()
+            }
+            keyupTimerRef.current = null
+          }, 100)
+        }
       }
     }
     window.addEventListener('keydown', handleKeyDown)
@@ -293,11 +325,12 @@ function Counter() {
               <strong>Average time/row:</strong> {showAvg ? <>{avgIsEstimated ? '~ ' : ''}{formatAvg(averageTimePerRow!)}</> : 'n/a'}
             </span>
             <button
-              className={`${styles.secondaryBtn} ${isPaused ? styles.resumeBtn : ''}`}
+              className={`${styles.secondaryBtn} ${styles.pauseBtn} ${isPaused ? styles.resumeBtn : ''}`}
               onClick={handlePause}
               disabled={!hasStarted}
             >
               {isPaused ? 'Resume' : 'Pause'}
+              <span className={styles.pauseTooltip}>or double-tap space</span>
             </button>
           </div>
           <div className={styles.btnGroup}>

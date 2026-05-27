@@ -235,6 +235,55 @@ describe('anomaly alert', () => {
   })
 })
 
+describe('double-tap spacebar', () => {
+  it('single tap increments shortly after key release', () => {
+    renderCounter()
+    fireEvent.click(screen.getByText('Start'))
+    fireEvent.keyDown(window, { code: 'Space' })
+    fireEvent.keyUp(window, { code: 'Space' })
+    act(() => { vi.advanceTimersByTime(100) })
+    expect(screen.getByText('1')).toBeInTheDocument()
+  })
+
+  it('two taps more than 300ms apart both increment', () => {
+    renderCounter()
+    fireEvent.click(screen.getByText('Start'))
+    fireEvent.keyDown(window, { code: 'Space' })
+    fireEvent.keyUp(window, { code: 'Space' })
+    act(() => { vi.advanceTimersByTime(400) })
+    fireEvent.keyDown(window, { code: 'Space' })
+    fireEvent.keyUp(window, { code: 'Space' })
+    act(() => { vi.advanceTimersByTime(100) })
+    expect(screen.getByText('2')).toBeInTheDocument()
+    expect(screen.queryByText('Resume')).not.toBeInTheDocument()
+  })
+
+  it('double-tap pauses without incrementing', () => {
+    renderCounter()
+    fireEvent.click(screen.getByText('Start'))
+    fireEvent.keyDown(window, { code: 'Space' })
+    fireEvent.keyDown(window, { code: 'Space' })
+    act(() => { vi.advanceTimersByTime(300) })
+    expect(screen.getByText('Resume')).toBeInTheDocument()
+    expect(screen.getByText('0')).toBeInTheDocument()
+  })
+
+  it('double-tap resumes when already paused', () => {
+    renderCounter()
+    fireEvent.click(screen.getByText('Start'))
+    fireEvent.click(screen.getByText('Pause'))
+    fireEvent.keyDown(window, { code: 'Space' })
+    fireEvent.keyDown(window, { code: 'Space' })
+    expect(screen.getByText('Pause')).toBeInTheDocument()
+  })
+
+  it('pause button shows tooltip text', () => {
+    renderCounter()
+    fireEvent.click(screen.getByText('Start'))
+    expect(screen.getByText('or double-tap space')).toBeInTheDocument()
+  })
+})
+
 describe('settings panel', () => {
   it('settings button is always visible', () => {
     renderCounter()
