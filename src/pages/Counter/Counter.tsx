@@ -234,7 +234,8 @@ function Counter() {
 
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
-      if (e.code === 'Space') {
+      const tag = (e.target as HTMLElement).tagName
+      if (e.code === 'Space' && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
         e.preventDefault()
         incrementRef.current()
         setIsPressing(true)
