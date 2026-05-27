@@ -15,6 +15,7 @@
   flex-direction: column;
   align-items: center;
   gap: 4px;
+  position: relative;
 }
 
 .projectRow {
@@ -363,11 +364,17 @@
   cursor: default;
 }
 
-.alertsMutedBtn {
+.bottomBar {
   position: fixed;
   bottom: 40px;
   left: 50%;
   transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alertsMutedBtn {
   background: none;
   border: 1px solid var(--border);
   border-radius: 20px;
@@ -407,4 +414,131 @@
   max-width: 300px;
   opacity: 1;
   margin-left: 8px;
+}
+
+.settingsBtn {
+  background: none;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 8px 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  color: var(--text-muted);
+  opacity: 0.4;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.settingsBtn:hover {
+  opacity: 1;
+}
+
+.settingsModal {
+  overflow-y: auto;
+  max-height: calc(100dvh - 40px);
+  max-width: 480px;
+  margin: 20px;
+}
+
+.settingsTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text);
+  margin: 0;
+}
+
+.settingsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.settingsSectionTitle {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.settingsField {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.settingsField label {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.settingsField input,
+.settingsField select {
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  transition: border-color 0.2s;
+}
+
+.settingsField input:focus,
+.settingsField select:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.settingsHint {
+  font-size: 11px;
+  color: var(--text-muted);
+  opacity: 0.7;
+}
+
+.settingsCheckboxGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  margin-top: 2px;
+}
+
+.settingsCheckboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--text-muted);
+  cursor: pointer;
+}
+
+.settingsToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.settingsActions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.saveBtn {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 15px;
+  font-weight: 500;
+  transition: opacity 0.2s;
+  cursor: pointer;
+}
+
+.saveBtn:hover {
+  opacity: 0.9;
 }

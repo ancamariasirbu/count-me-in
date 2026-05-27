@@ -235,6 +235,78 @@ describe('anomaly alert', () => {
   })
 })
 
+describe('settings panel', () => {
+  it('settings button is always visible', () => {
+    renderCounter()
+    expect(screen.getByRole('button', { name: 'open settings' })).toBeInTheDocument()
+  })
+
+  it('opens the settings modal when the settings button is clicked', () => {
+    renderCounter()
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    expect(screen.getByText('Settings')).toBeInTheDocument()
+  })
+
+  it('pre-fills the modal with onboarding data', () => {
+    renderCounter({ projectName: 'Moby Sweater', sessionNumber: '3' })
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    expect(screen.getByLabelText('Project name')).toHaveValue('Moby Sweater')
+    expect(screen.getByLabelText('Session number')).toHaveValue(3)
+  })
+
+  it('closes the modal when Cancel is clicked', () => {
+    renderCounter()
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    fireEvent.click(screen.getByText('Cancel'))
+    expect(screen.queryByText('Settings')).not.toBeInTheDocument()
+  })
+
+  it('closes the modal when clicking outside', () => {
+    renderCounter()
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    fireEvent.click(document.querySelector('[class*="overlay"]')!)
+    expect(screen.queryByText('Settings')).not.toBeInTheDocument()
+  })
+
+  it('updates the header after saving a new project name', () => {
+    renderCounter()
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    fireEvent.change(screen.getByLabelText('Project name'), { target: { value: 'New Sweater' } })
+    fireEvent.click(screen.getByText('Save'))
+    expect(screen.getByText('New Sweater')).toBeInTheDocument()
+  })
+
+  it('applies starting row as an offset to the displayed count', () => {
+    renderCounter()
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    fireEvent.change(screen.getByLabelText('Start counting from row'), { target: { value: '10' } })
+    fireEvent.click(screen.getByText('Save'))
+    fireEvent.click(screen.getByText('Start'))
+    expect(screen.getByText('10')).toBeInTheDocument()
+  })
+
+  it('includes starting row in the count after incrementing', () => {
+    renderCounter()
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    fireEvent.change(screen.getByLabelText('Start counting from row'), { target: { value: '10' } })
+    fireEvent.click(screen.getByText('Save'))
+    fireEvent.click(screen.getByText('Start'))
+    fireEvent.click(screen.getByText('rows'))
+    expect(screen.getByText('11')).toBeInTheDocument()
+  })
+
+  it('resets starting row to 0 on session reset', () => {
+    renderCounter()
+    fireEvent.click(screen.getByRole('button', { name: 'open settings' }))
+    fireEvent.change(screen.getByLabelText('Start counting from row'), { target: { value: '10' } })
+    fireEvent.click(screen.getByText('Save'))
+    fireEvent.click(screen.getByText('Start'))
+    fireEvent.click(screen.getByText('Reset'))
+    fireEvent.click(screen.getAllByText('Reset')[1])
+    expect(screen.getByText('Start')).toBeInTheDocument()
+  })
+})
+
 describe('bell icon', () => {
   it('is visible before session starts', () => {
     renderCounter()

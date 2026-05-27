@@ -3,18 +3,49 @@ import { useLocation } from 'react-router-dom'
 import styles from './Counter.module.css'
 import { formatLastRow, formatAvg } from '../../utils/formatters'
 
+const stitchPatterns = [
+  'Stockinette',
+  'Ribbing',
+  'Garter stitch',
+  'Lace',
+  'Cables',
+  'Texture',
+  'Not sure',
+]
+
 interface OnboardingState {
   projectName: string
   sessionNumber: string
+  garmentType: string
+  size: string
+  stitchPattern: string[]
   anomalyAlertsEnabled: boolean
+}
+
+interface SettingsForm {
+  projectName: string
+  sessionNumber: string
+  garmentType: string
+  size: string
+  stitchPattern: string[]
+  anomalyAlertsEnabled: boolean
+  startingRow: string
 }
 
 function Counter() {
   const { state } = useLocation()
-  const { projectName, sessionNumber, anomalyAlertsEnabled } = (state as OnboardingState) ?? {}
+  const { projectName, sessionNumber, garmentType, size, stitchPattern, anomalyAlertsEnabled } = (state as OnboardingState) ?? {}
 
-  const displayName = projectName || 'My Project'
-  const displaySession = sessionNumber || '1'
+  const [sessionDetails, setSessionDetails] = useState({
+    projectName: projectName || '',
+    sessionNumber: sessionNumber || '',
+    garmentType: garmentType || '',
+    size: size || '',
+    stitchPattern: stitchPattern || ['Not sure'],
+  })
+
+  const displayName = sessionDetails.projectName || 'My Project'
+  const displaySession = sessionDetails.sessionNumber || '1'
 
   const [hasStarted, setHasStarted] = useState(false)
   const [rowCount, setRowCount] = useState(0)
@@ -25,6 +56,17 @@ function Counter() {
   const [anomalyAlertDisabled, setAnomalyAlertDisabled] = useState(!(anomalyAlertsEnabled ?? true))
   const [consecutiveSlowRows, setConsecutiveSlowRows] = useState(0)
   const [selectedAnomalyOption, setSelectedAnomalyOption] = useState<'yes' | 'no' | 'break' | 'reset' | null>(null)
+  const [startingRow, setStartingRow] = useState(0)
+  const [showSettings, setShowSettings] = useState(false)
+  const [settingsForm, setSettingsForm] = useState<SettingsForm>({
+    projectName: projectName || '',
+    sessionNumber: sessionNumber || '',
+    garmentType: garmentType || '',
+    size: size || '',
+    stitchPattern: stitchPattern || ['Not sure'],
+    anomalyAlertsEnabled: anomalyAlertsEnabled ?? true,
+    startingRow: '0',
+  })
 
   // Active-time tracking: all timing excludes paused time
   const [rowTimestampsMs, setRowTimestampsMs] = useState<number[]>([])
@@ -148,6 +190,33 @@ function Counter() {
     setShowAnomalyAlert(false)
     setSelectedAnomalyOption(null)
     setConsecutiveSlowRows(0)
+    setStartingRow(0)
+  }
+
+  function openSettings() {
+    setSettingsForm({
+      projectName: sessionDetails.projectName,
+      sessionNumber: sessionDetails.sessionNumber,
+      garmentType: sessionDetails.garmentType,
+      size: sessionDetails.size,
+      stitchPattern: [...sessionDetails.stitchPattern],
+      anomalyAlertsEnabled: !anomalyAlertDisabled,
+      startingRow: String(startingRow),
+    })
+    setShowSettings(true)
+  }
+
+  function saveSettings() {
+    setSessionDetails({
+      projectName: settingsForm.projectName,
+      sessionNumber: settingsForm.sessionNumber,
+      garmentType: settingsForm.garmentType,
+      size: settingsForm.size,
+      stitchPattern: settingsForm.stitchPattern,
+    })
+    setStartingRow(Math.max(0, parseInt(settingsForm.startingRow) || 0))
+    setAnomalyAlertDisabled(!settingsForm.anomalyAlertsEnabled)
+    setShowSettings(false)
   }
 
   // Ticker: only runs when there is an active period
@@ -203,7 +272,7 @@ function Counter() {
         >
           {hasStarted ? (
             <>
-              <span className={styles.btnCount}>{rowCount}</span>
+              <span className={styles.btnCount}>{startingRow + rowCount}</span>
               <span className={styles.btnLabel}>rows</span>
             </>
           ) : (
@@ -245,7 +314,8 @@ function Counter() {
         </div>
       </footer>
 
-      <button
+      <div className={styles.bottomBar}>
+        <button
           className={`${styles.alertsMutedBtn} ${anomalyAlertDisabled ? styles.alertsMutedOff : styles.alertsMutedOn}`}
           onClick={() => setAnomalyAlertDisabled(v => !v)}
           aria-label="toggle missed row alerts"
@@ -270,6 +340,17 @@ function Counter() {
               : <>missed row alerts are on <strong>·</strong> click to disable</>}
           </span>
         </button>
+        <button
+          className={styles.settingsBtn}
+          onClick={openSettings}
+          aria-label="open settings"
+        >
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+          </svg>
+        </button>
+      </div>
 
       {showAnomalyAlert && (
         <div className={styles.overlay}>
@@ -369,6 +450,138 @@ function Counter() {
               </button>
               <button className={styles.resetBtn} onClick={confirmReset}>
                 Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showSettings && (
+        <div className={styles.overlay} onClick={() => setShowSettings(false)}>
+          <div className={`${styles.modal} ${styles.settingsModal}`} onClick={e => e.stopPropagation()}>
+            <h2 className={styles.settingsTitle}>Settings</h2>
+
+            <div className={styles.settingsSection}>
+              <span className={styles.settingsSectionTitle}>Session details</span>
+
+              <div className={styles.settingsField}>
+                <label htmlFor="settings-projectName">Project name</label>
+                <input
+                  id="settings-projectName"
+                  type="text"
+                  placeholder="Moby Sweater"
+                  value={settingsForm.projectName}
+                  onChange={e => setSettingsForm(f => ({ ...f, projectName: e.target.value }))}
+                />
+              </div>
+
+              <div className={styles.settingsField}>
+                <label htmlFor="settings-sessionNumber">Session number</label>
+                <input
+                  id="settings-sessionNumber"
+                  type="number"
+                  placeholder="3"
+                  min="1"
+                  value={settingsForm.sessionNumber}
+                  onChange={e => setSettingsForm(f => ({ ...f, sessionNumber: e.target.value }))}
+                />
+              </div>
+
+              <div className={styles.settingsField}>
+                <label htmlFor="settings-garmentType">Garment type</label>
+                <select
+                  id="settings-garmentType"
+                  value={settingsForm.garmentType}
+                  onChange={e => setSettingsForm(f => ({ ...f, garmentType: e.target.value }))}
+                >
+                  <option value="">Select a garment</option>
+                  <option value="Sweater / cardigan">Sweater / cardigan</option>
+                  <option value="Top">Top</option>
+                  <option value="Skirt">Skirt</option>
+                  <option value="Dress">Dress</option>
+                  <option value="Slipover">Slipover</option>
+                  <option value="Vest">Vest</option>
+                  <option value="Camisole">Camisole</option>
+                  <option value="Blouse">Blouse</option>
+                  <option value="Jacket">Jacket</option>
+                  <option value="Hat">Hat</option>
+                  <option value="Scarf">Scarf</option>
+                  <option value="Mittens">Mittens</option>
+                  <option value="Socks">Socks</option>
+                  <option value="Slippers">Slippers</option>
+                  <option value="Shawl">Shawl</option>
+                  <option value="Blanket">Blanket</option>
+                  <option value="Other">Other</option>
+                </select>
+              </div>
+
+              <div className={styles.settingsField}>
+                <label htmlFor="settings-size">Size</label>
+                <input
+                  id="settings-size"
+                  type="text"
+                  placeholder="M"
+                  value={settingsForm.size}
+                  onChange={e => setSettingsForm(f => ({ ...f, size: e.target.value }))}
+                />
+              </div>
+
+              <div className={styles.settingsToggleRow}>
+                <span>Missed row alerts</span>
+                <button
+                  type="button"
+                  className={`${styles.pillToggle} ${settingsForm.anomalyAlertsEnabled ? styles.pillToggleOn : ''}`}
+                  onClick={() => setSettingsForm(f => ({ ...f, anomalyAlertsEnabled: !f.anomalyAlertsEnabled }))}
+                  aria-label="toggle missed row alerts"
+                />
+              </div>
+
+              <div className={styles.settingsField}>
+                <label>Stitch pattern</label>
+                <div className={styles.settingsCheckboxGroup}>
+                  {stitchPatterns.map(pattern => (
+                    <label key={pattern} className={styles.settingsCheckboxLabel}>
+                      <input
+                        type="checkbox"
+                        value={pattern}
+                        checked={settingsForm.stitchPattern.includes(pattern)}
+                        onChange={e => {
+                          if (e.target.checked) {
+                            setSettingsForm(f => ({ ...f, stitchPattern: [...f.stitchPattern, pattern] }))
+                          } else {
+                            setSettingsForm(f => ({ ...f, stitchPattern: f.stitchPattern.filter(p => p !== pattern) }))
+                          }
+                        }}
+                      />
+                      {pattern}
+                    </label>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            <div className={styles.settingsSection}>
+              <span className={styles.settingsSectionTitle}>Starting row</span>
+              <div className={styles.settingsField}>
+                <label htmlFor="settings-startingRow">Start counting from row</label>
+                <input
+                  id="settings-startingRow"
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={settingsForm.startingRow}
+                  onChange={e => setSettingsForm(f => ({ ...f, startingRow: e.target.value }))}
+                />
+                <span className={styles.settingsHint}>rows already knitted in previous sessions</span>
+              </div>
+            </div>
+
+            <div className={styles.settingsActions}>
+              <button className={styles.secondaryBtn} onClick={() => setShowSettings(false)}>
+                Cancel
+              </button>
+              <button className={styles.saveBtn} onClick={saveSettings}>
+                Save
               </button>
             </div>
           </div>
