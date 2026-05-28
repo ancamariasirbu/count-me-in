@@ -289,62 +289,61 @@ function Counter() {
   return (
     <div className={styles.page}>
       <header className={styles.header}>
-        <div className={styles.projectRow}>
-          <span className={styles.dot}>·</span>
-          <span className={styles.projectName}>{displayName}</span>
-          <span className={styles.dot}>·</span>
-        </div>
+        <span className={styles.projectName}>{displayName}</span>
         <span className={styles.session}>Session {displaySession}</span>
       </header>
 
       <main className={styles.main}>
-        <button
-          className={`${styles.incrementBtn} ${isPressing ? styles.pressing : ''} ${isPaused ? styles.paused : ''}`}
-          onClick={hasStarted ? increment : handleStart}
-          disabled={isPaused}
-        >
-          {hasStarted ? (
-            <>
-              <span className={styles.btnCount}>{startingRow + rowCount}</span>
-              <span className={styles.btnLabel}>rows</span>
-            </>
-          ) : (
-            <span className={styles.btnStart}>Start</span>
-          )}
-        </button>
-        <div className={styles.adjustRow}>
-          <button className={`${styles.adjustBtn} ${!hasStarted || isPaused ? styles.paused : ''}`} onClick={decrement} disabled={!hasStarted || isPaused}>−</button>
-          <button className={`${styles.adjustBtn} ${!hasStarted || isPaused ? styles.paused : ''}`} onClick={increment} disabled={!hasStarted || isPaused}>+</button>
+        <div className={styles.circleWrap}>
+          <div className={styles.orbitRing} />
+          <button
+            className={`${styles.incrementBtn} ${isPressing ? styles.pressing : ''} ${isPaused ? styles.paused : ''}`}
+            onClick={hasStarted ? increment : handleStart}
+            disabled={isPaused}
+          >
+            {hasStarted ? (
+              <>
+                <span className={styles.btnCount}>{startingRow + rowCount}</span>
+                <span className={styles.btnLabel}>rows</span>
+              </>
+            ) : (
+              <span className={styles.btnStart}>Start</span>
+            )}
+          </button>
+          <div className={styles.adjustRow}>
+            <button className={`${styles.adjustBtn} ${!hasStarted || isPaused ? styles.paused : ''}`} onClick={decrement} disabled={!hasStarted || isPaused}>−</button>
+            <button className={`${styles.adjustBtn} ${!hasStarted || isPaused ? styles.paused : ''}`} onClick={increment} disabled={!hasStarted || isPaused}>+</button>
+          </div>
+        </div>
+        <div className={styles.statsRow}>
+          <div className={styles.statPill}>
+            <span className={styles.statLabel}>avg / row</span>
+            <span className={styles.statValue}>{showAvg ? <>{avgIsEstimated ? '~ ' : ''}{formatAvg(averageTimePerRow!)}</> : 'n/a'}</span>
+          </div>
+          <div className={styles.statPill}>
+            <span className={styles.statLabel}>last row</span>
+            <span className={styles.statValue}>{showLastRow ? formatLastRow(timeSinceLastRow!) : 'n/a'}</span>
+          </div>
         </div>
       </main>
 
       <footer className={styles.footer}>
-        <div className={styles.secondaryActions}>
-          <div className={styles.btnGroup}>
-            <span className={styles.statLeft}>
-              <strong>Average time/row:</strong> {showAvg ? <>{avgIsEstimated ? '~ ' : ''}{formatAvg(averageTimePerRow!)}</> : 'n/a'}
-            </span>
-            <button
-              className={`${styles.secondaryBtn} ${styles.pauseBtn} ${isPaused ? styles.resumeBtn : ''}`}
-              onClick={handlePause}
-              disabled={!hasStarted}
-            >
-              {isPaused ? 'Resume' : 'Pause'}
-              <span className={styles.pauseTooltip}>or double-tap space</span>
-            </button>
-          </div>
-          <div className={styles.btnGroup}>
-            <span className={styles.statRight}>
-              <strong>Last row:</strong> {showLastRow ? formatLastRow(timeSinceLastRow!) : 'n/a'}
-            </span>
-            <button
-              className={styles.secondaryBtn}
-              onClick={() => setShowResetConfirm(true)}
-              disabled={!hasStarted}
-            >
-              Reset
-            </button>
-          </div>
+        <div className={styles.actionRow}>
+          <button
+            className={`${styles.secondaryBtn} ${styles.pauseBtn} ${isPaused ? styles.resumeBtn : ''}`}
+            onClick={handlePause}
+            disabled={!hasStarted}
+          >
+            {isPaused ? 'Resume' : 'Pause'}
+            <span className={styles.pauseTooltip}>or double-tap space</span>
+          </button>
+          <button
+            className={styles.secondaryBtn}
+            onClick={() => setShowResetConfirm(true)}
+            disabled={!hasStarted}
+          >
+            Reset
+          </button>
         </div>
       </footer>
 

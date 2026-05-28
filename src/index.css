@@ -5,14 +5,14 @@
 }
 
 :root {
-  --bg: #fdf8f4;
-  --bg-alt: #f5ede4;
-  --text: #4a3728;
-  --text-muted: #8c7469;
-  --accent: #d4607a;
-  --accent-light: #f7c5d0;
-  --border: #e8d9cc;
-  --shadow: 0 4px 16px rgba(74, 55, 40, 0.08);
+  --bg: #fef2f7;
+  --bg-alt: #f8e4ee;
+  --text: #2a1520;
+  --text-muted: #9a6878;
+  --accent: #d4708c;
+  --accent-light: #eec4d4;
+  --border: #eec4d4;
+  --shadow: 0 4px 16px rgba(42, 21, 32, 0.08);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
 
