@@ -29,21 +29,19 @@
   font-weight: 400;
   font-style: italic;
   color: var(--text-muted);
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .session {
   font-family: var(--mono);
   font-size: 10px;
   font-weight: 500;
-  color: #d4a8bc;
+  color: var(--text-faint);
   letter-spacing: 0.18em;
   text-transform: uppercase;
   background: var(--bg-alt);
   border: 1px solid var(--border);
   padding: 3px 10px;
   border-radius: 20px;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 /* ── Main: circle + stats ── */
@@ -97,7 +95,7 @@
   height: 200px;
   border-radius: 50%;
   border: none;
-  background: linear-gradient(145deg, #e090a8 0%, #c86080 100%);
+  background: transparent;
   color: #fff0f4;
   display: flex;
   flex-direction: column;
@@ -106,15 +104,26 @@
   cursor: pointer;
   position: relative;
   z-index: 0;
+  transition: opacity 0.2s;
+}
+
+/* Visual circle — only this layer scales, so the count/label text never blurs */
+.incrementBtn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #e090a8 0%, #c86080 100%);
   box-shadow:
     0 8px 40px rgba(212, 112, 140, 0.30),
     0 2px 8px rgba(212, 112, 140, 0.15),
     inset 0 1px 0 rgba(255, 255, 255, 0.20);
-  transition: transform 0.12s ease, box-shadow 0.12s ease, opacity 0.2s;
+  z-index: -1;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
 /* Glassy highlight */
-.incrementBtn::before {
+.incrementBtn::after {
   content: '';
   position: absolute;
   width: 80%;
@@ -124,24 +133,25 @@
   border-radius: 50%;
   background: radial-gradient(ellipse, rgba(255, 255, 255, 0.18) 0%, transparent 70%);
   pointer-events: none;
+  z-index: -1;
 }
 
-.incrementBtn:hover:not(:disabled) {
+.incrementBtn:hover:not(:disabled)::before {
   transform: scale(1.02);
 }
 
-.incrementBtn:active:not(:disabled) {
+.incrementBtn:active:not(:disabled)::before {
   transform: scale(0.97);
   box-shadow:
     0 4px 20px rgba(212, 112, 140, 0.35),
     inset 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
-.pressing {
+.pressing::before {
   transform: scale(0.97);
   box-shadow:
     0 4px 20px rgba(212, 112, 140, 0.35),
-    inset 0 2px 10px rgba(0, 0, 0, 0.08) !important;
+    inset 0 2px 10px rgba(0, 0, 0, 0.08);
 }
 
 .paused {
@@ -163,7 +173,6 @@
   line-height: 1;
   letter-spacing: -0.03em;
   position: relative;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .btnLabel {
@@ -173,9 +182,7 @@
   font-style: italic;
   color: #fde0ec;
   position: relative;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
-
 
 .btnStart {
   font-family: 'Inter', sans-serif;
@@ -183,7 +190,6 @@
   font-weight: 700;
   letter-spacing: 0.06em;
   position: relative;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 /* Adjust −/+ buttons: circular, absolute below the orbit ring */
@@ -201,7 +207,7 @@
   height: 44px;
   border-radius: 50%;
   border: 1.5px solid var(--border);
-  background: #fffafc;
+  background: var(--surface);
   color: var(--text-muted);
   font-family: var(--serif);
   font-size: 20px;
@@ -211,7 +217,6 @@
   justify-content: center;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
   box-shadow: 0 2px 10px rgba(212, 112, 140, 0.10);
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .adjustBtn:hover:not(:disabled) {
@@ -251,7 +256,6 @@
   padding: 0;
   white-space: nowrap;
   transition: color 0.2s;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .resetAvgBtn:hover:not(:disabled) {
@@ -259,7 +263,7 @@
 }
 
 .resetAvgBtn:disabled {
-  color: #d4a8bc;
+  color: var(--text-faint);
   cursor: default;
 }
 
@@ -282,7 +286,7 @@
 
 .statPill {
   flex: 1;
-  background: #fffafc;
+  background: var(--surface);
   border: 1.5px solid var(--border);
   border-radius: 16px;
   padding: 16px 12px;
@@ -295,11 +299,10 @@
   font-family: var(--mono);
   font-size: 9px;
   font-weight: 400;
-  color: #d4a8bc;
+  color: var(--text-faint);
   letter-spacing: 0.15em;
   text-transform: uppercase;
   margin-bottom: 5px;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .statValue {
@@ -309,7 +312,6 @@
   font-weight: 500;
   color: var(--text);
   white-space: nowrap;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 /* ── Footer: action buttons ── */
@@ -330,14 +332,12 @@
   padding: 13px;
   border: 1.5px solid var(--border);
   border-radius: 14px;
-  background: #fffafc;
+  background: var(--surface);
   color: var(--text-muted);
   font-family: var(--serif);
   font-size: 14px;
   font-weight: 400;
-  font-style: italic;
-  -webkit-font-smoothing: subpixel-antialiased;
-  transition: border-color 0.3s, color 0.3s, background 0.3s, opacity 0.2s;
+  font-style: italic;  transition: border-color 0.3s, color 0.3s, background 0.3s, opacity 0.2s;
 }
 
 .secondaryBtn:hover:not(:disabled) {
@@ -346,6 +346,11 @@
 }
 
 .secondaryBtn:active:not(:disabled) {
+  transform: scale(0.99);
+}
+
+/* Keyboard double-tap-space: mirror the click :active press on pause/resume */
+.pausePressed {
   transform: scale(0.99);
 }
 
@@ -421,7 +426,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #d4a8bc;
+  color: var(--text-faint);
   display: flex;
   align-items: center;
   gap: 4px;
@@ -430,14 +435,21 @@
   letter-spacing: 0.06em;
   transition: color 0.2s;
   padding: 4px 0;
-  -webkit-font-smoothing: subpixel-antialiased;
+  position: relative;
 }
 
 .iconBtn:hover {
   color: var(--accent);
 }
 
-.iconBtnMuted {
+.iconBtn:hover .pauseTooltip {
+  opacity: 1;
+}
+
+.focusTooltip {
+  white-space: normal;
+  width: 150px;
+  text-align: center;
 }
 
 /* ── Modals & overlays ── */

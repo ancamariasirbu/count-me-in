@@ -59,6 +59,8 @@ function Counter() {
   const [startingRow, setStartingRow] = useState(0)
   const [showResetAvgConfirm, setShowResetAvgConfirm] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
+  const [focusRingsEnabled, setFocusRingsEnabled] = useState(false)
+  const [pauseFlash, setPauseFlash] = useState(false)
   const [settingsForm, setSettingsForm] = useState<SettingsForm>({
     projectName: projectName || '',
     sessionNumber: sessionNumber || '',
@@ -232,12 +234,20 @@ function Counter() {
     return () => clearInterval(interval)
   }, [isPaused, clockTimestamp])
 
+  // Opt-in keyboard focus outlines (off by default to avoid rings during spacebar use)
+  useEffect(() => {
+    const root = document.documentElement
+    root.classList.toggle('show-focus-rings', focusRingsEnabled)
+    return () => root.classList.remove('show-focus-rings')
+  }, [focusRingsEnabled])
+
   // Refs so the keyboard handler always calls the latest versions of these functions
   const incrementRef = useRef(increment)
   const handlePauseRef = useRef(handlePause)
   const lastSpacePressRef = useRef<number>(0)
   const pendingIncrementRef = useRef<boolean>(false)
   const keyupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const pauseFlashTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   useEffect(() => {
     incrementRef.current = increment
     handlePauseRef.current = handlePause
@@ -258,6 +268,10 @@ function Counter() {
           pendingIncrementRef.current = false
           setIsPressing(false)
           handlePauseRef.current()
+          // Mirror the click :active animation on the pause/resume button
+          setPauseFlash(true)
+          if (pauseFlashTimerRef.current) clearTimeout(pauseFlashTimerRef.current)
+          pauseFlashTimerRef.current = setTimeout(() => setPauseFlash(false), 130)
           lastSpacePressRef.current = 0
         } else {
           // First tap: mark increment as pending, fire it on keyUp
@@ -338,7 +352,7 @@ function Counter() {
       <footer className={styles.footer}>
         <div className={styles.actionRow}>
           <button
-            className={`${styles.secondaryBtn} ${styles.pauseBtn} ${isPaused ? styles.resumeBtn : ''}`}
+            className={`${styles.secondaryBtn} ${styles.pauseBtn} ${isPaused ? styles.resumeBtn : ''} ${pauseFlash ? styles.pausePressed : ''}`}
             onClick={handlePause}
             disabled={!hasStarted}
           >
@@ -356,7 +370,7 @@ function Counter() {
         </div>
         <div className={styles.bottomBar}>
           <button
-            className={`${styles.iconBtn} ${anomalyAlertDisabled ? styles.iconBtnMuted : ''}`}
+            className={styles.iconBtn}
             onClick={() => setAnomalyAlertDisabled(v => !v)}
             aria-label="toggle missed row alerts"
           >
@@ -386,6 +400,35 @@ function Counter() {
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
             settings
+          </button>
+          <button
+            className={styles.iconBtn}
+            onClick={() => setFocusRingsEnabled(v => !v)}
+            aria-label="toggle keyboard focus outlines"
+            aria-pressed={focusRingsEnabled}
+          >
+            {focusRingsEnabled ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+            ) : (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 7V5a2 2 0 0 1 2-2h2"/>
+                <path d="M17 3h2a2 2 0 0 1 2 2v2"/>
+                <path d="M21 17v2a2 2 0 0 1-2 2h-2"/>
+                <path d="M7 21H5a2 2 0 0 1-2-2v-2"/>
+                <circle cx="12" cy="12" r="3"/>
+                <line x1="2" y1="2" x2="22" y2="22"/>
+              </svg>
+            )}
+            focus
+            <span className={`${styles.pauseTooltip} ${styles.focusTooltip}`}>
+              {focusRingsEnabled ? 'Focus outlines on' : 'Toggle on for keyboard navigation'}
+            </span>
           </button>
         </div>
       </footer>

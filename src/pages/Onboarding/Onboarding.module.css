@@ -37,7 +37,6 @@
   text-transform: uppercase;
   color: var(--text-muted);
   text-indent: 2px;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .title {
@@ -47,7 +46,6 @@
   line-height: 1.08;
   color: var(--text);
   margin-top: -2px;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .title em {
@@ -63,7 +61,6 @@
   margin-top: 18px;
   line-height: 1.6;
   max-width: 300px;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .heroBottom {
@@ -96,7 +93,6 @@
   font-size: 10px;
   letter-spacing: 0.10em;
   color: var(--text-muted);
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 /* ── Right: form ── */
@@ -124,7 +120,6 @@
   text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 32px;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .form {
@@ -151,7 +146,6 @@
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--text-muted);
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .input,
@@ -163,9 +157,7 @@
   color: var(--text);
   font-size: 14px;
   font-family: 'Inter', sans-serif;
-  transition: border-color 0.2s;
-  -webkit-font-smoothing: subpixel-antialiased;
-  appearance: none;
+  transition: border-color 0.2s;  appearance: none;
   width: 100%;
 }
 
@@ -214,9 +206,7 @@
   letter-spacing: 0.04em;
   color: var(--text-muted);
   background: var(--bg);
-  transition: border-color 0.2s, background 0.2s, color 0.2s;
-  -webkit-font-smoothing: subpixel-antialiased;
-  user-select: none;
+  transition: border-color 0.2s, background 0.2s, color 0.2s;  user-select: none;
 }
 
 .pill input {
@@ -255,7 +245,6 @@
   letter-spacing: 0.10em;
   text-transform: uppercase;
   color: var(--text-muted);
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .tooltipAnchor {
@@ -272,7 +261,6 @@
   color: var(--text-muted);
   cursor: default;
   flex-shrink: 0;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .tooltip {
@@ -294,7 +282,6 @@
   pointer-events: none;
   transition: opacity 0.2s;
   z-index: 1;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .tooltipAnchor:hover .tooltip {
@@ -360,7 +347,6 @@
   font-style: italic;
   cursor: pointer;
   transition: border-color 0.2s, color 0.2s;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .skip:hover {
@@ -380,7 +366,6 @@
   letter-spacing: 0.04em;
   cursor: pointer;
   transition: opacity 0.2s;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .submit:hover {
@@ -418,7 +403,6 @@
   font-size: 15px;
   color: var(--text);
   line-height: 1.6;
-  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .modalActions {

@@ -12,6 +12,8 @@
   --accent: #d4708c;
   --accent-light: #eec4d4;
   --border: #eec4d4;
+  --surface: #fffafc;
+  --text-faint: #d4a8bc;
   --shadow: 0 4px 16px rgba(42, 21, 32, 0.08);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
@@ -23,8 +25,6 @@
   line-height: 1.5;
   color: var(--text);
   background: var(--bg);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
 }
 
 body {
@@ -53,6 +53,13 @@ button:focus {
 
 button:disabled {
   cursor: default;
+}
+
+/* Keyboard focus outlines: opt-in, toggled via the footer "focus" button
+   (adds .show-focus-rings on <html>). Only shows on keyboard focus. */
+html.show-focus-rings :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
 }
 
 img, svg {
