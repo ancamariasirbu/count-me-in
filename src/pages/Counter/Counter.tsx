@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigationType } from 'react-router-dom'
 import styles from './Counter.module.css'
 import { formatLastRow, formatAvg } from '../../utils/formatters'
 
@@ -32,48 +32,101 @@ interface SettingsForm {
   startingRow: string
 }
 
+interface PersistedSession {
+  sessionDetails: {
+    projectName: string
+    sessionNumber: string
+    garmentType: string
+    size: string
+    stitchPattern: string[]
+  }
+  hasStarted: boolean
+  rowCount: number
+  startingRow: number
+  rowTimestampsMs: number[]
+  knittingTime: number
+  anomalyAlertDisabled: boolean
+  consecutiveSlowRows: number
+}
+
+const STORAGE_KEY = 'count-me-in:session'
+
+// If a tick arrives this much later than expected, the app was suspended
+// (machine slept or the tab was backgrounded for a while) — treat as a pause.
+const SUSPEND_GAP_MS = 10_000
+
+function loadSession(): PersistedSession | null {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY)
+    return raw ? (JSON.parse(raw) as PersistedSession) : null
+  } catch {
+    return null
+  }
+}
+
+function saveSession(session: PersistedSession) {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(session))
+  } catch {
+    // Ignore: private mode, quota, or storage disabled.
+  }
+}
+
 function Counter() {
   const { state } = useLocation()
+  const navigationType = useNavigationType()
   const { projectName, sessionNumber, garmentType, size, stitchPattern, anomalyAlertsEnabled } = (state as OnboardingState) ?? {}
 
-  const [sessionDetails, setSessionDetails] = useState({
-    projectName: projectName || '',
-    sessionNumber: sessionNumber || '',
-    garmentType: garmentType || '',
-    size: size || '',
-    stitchPattern: stitchPattern || ['Not sure'],
-  })
+  // A PUSH/REPLACE carrying state means the user just came through onboarding
+  // ("Let's knit", "Skip", or "Continue") — start fresh. A POP (reload,
+  // back/forward, or direct open) restores the saved session instead.
+  const [restored] = useState<PersistedSession | null>(() =>
+    state && navigationType !== 'POP' ? null : loadSession()
+  )
+
+  const [sessionDetails, setSessionDetails] = useState(
+    restored?.sessionDetails ?? {
+      projectName: projectName || '',
+      sessionNumber: sessionNumber || '',
+      garmentType: garmentType || '',
+      size: size || '',
+      stitchPattern: stitchPattern || ['Not sure'],
+    }
+  )
 
   const displayName = sessionDetails.projectName || 'My Project'
   const displaySession = String(parseInt(sessionDetails.sessionNumber) || 1).padStart(2, '0')
 
-  const [hasStarted, setHasStarted] = useState(false)
-  const [rowCount, setRowCount] = useState(0)
+  const [hasStarted, setHasStarted] = useState(restored?.hasStarted ?? false)
+  const [rowCount, setRowCount] = useState(restored?.rowCount ?? 0)
   const [isPressing, setIsPressing] = useState(false)
-  const [isPaused, setIsPaused] = useState(false)
+  // A restored session always wakes paused — we never count time the app wasn't running.
+  const [isPaused, setIsPaused] = useState(restored?.hasStarted ?? false)
   const [showResetConfirm, setShowResetConfirm] = useState(false)
   const [showAnomalyAlert, setShowAnomalyAlert] = useState(false)
-  const [anomalyAlertDisabled, setAnomalyAlertDisabled] = useState(!(anomalyAlertsEnabled ?? true))
-  const [consecutiveSlowRows, setConsecutiveSlowRows] = useState(0)
+  const [anomalyAlertDisabled, setAnomalyAlertDisabled] = useState(
+    restored ? restored.anomalyAlertDisabled : !(anomalyAlertsEnabled ?? true)
+  )
+  const [consecutiveSlowRows, setConsecutiveSlowRows] = useState(restored?.consecutiveSlowRows ?? 0)
   const [selectedAnomalyOption, setSelectedAnomalyOption] = useState<'yes' | 'no' | 'break' | 'reset' | null>(null)
-  const [startingRow, setStartingRow] = useState(0)
+  const [startingRow, setStartingRow] = useState(restored?.startingRow ?? 0)
   const [showResetAvgConfirm, setShowResetAvgConfirm] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [focusRingsEnabled, setFocusRingsEnabled] = useState(false)
   const [pauseFlash, setPauseFlash] = useState(false)
   const [settingsForm, setSettingsForm] = useState<SettingsForm>({
-    projectName: projectName || '',
-    sessionNumber: sessionNumber || '',
-    garmentType: garmentType || '',
-    size: size || '',
-    stitchPattern: stitchPattern || ['Not sure'],
-    anomalyAlertsEnabled: anomalyAlertsEnabled ?? true,
-    startingRow: '0',
+    projectName: restored?.sessionDetails.projectName ?? projectName ?? '',
+    sessionNumber: restored?.sessionDetails.sessionNumber ?? sessionNumber ?? '',
+    garmentType: restored?.sessionDetails.garmentType ?? garmentType ?? '',
+    size: restored?.sessionDetails.size ?? size ?? '',
+    stitchPattern: restored?.sessionDetails.stitchPattern ?? stitchPattern ?? ['Not sure'],
+    anomalyAlertsEnabled: restored ? !restored.anomalyAlertDisabled : (anomalyAlertsEnabled ?? true),
+    startingRow: String(restored?.startingRow ?? 0),
   })
 
   // Active-time tracking: all timing excludes paused time
-  const [rowTimestampsMs, setRowTimestampsMs] = useState<number[]>([])
-  const [storedTotalKnittingTime, setStoredTotalKnittingTime] = useState(0)
+  const [rowTimestampsMs, setRowTimestampsMs] = useState<number[]>(restored?.rowTimestampsMs ?? [])
+  const [storedTotalKnittingTime, setStoredTotalKnittingTime] = useState(restored?.knittingTime ?? 0)
   const [clockTimestamp, setClockTimestamp] = useState<number | null>(null)
   const [now, setNow] = useState(Date.now())
 
@@ -227,12 +280,43 @@ function Counter() {
     setShowSettings(false)
   }
 
-  // Ticker: only runs when there is an active period
+  // Ticker: only runs when there is an active period. If a tick arrives long
+  // after the previous one, the app was suspended (sleep / long background) —
+  // count active time only up to the last good tick, then auto-pause so the
+  // offline gap is never added to the knitting total.
+  const lastTickRef = useRef(Date.now())
   useEffect(() => {
     if (isPaused || clockTimestamp === null) return
-    const interval = setInterval(() => setNow(Date.now()), 1000)
+    lastTickRef.current = Date.now()
+    const interval = setInterval(() => {
+      const t = Date.now()
+      if (t - lastTickRef.current > SUSPEND_GAP_MS) {
+        setStoredTotalKnittingTime(ms => ms + (lastTickRef.current - clockTimestamp))
+        setClockTimestamp(null)
+        setIsPaused(true)
+        return
+      }
+      lastTickRef.current = t
+      setNow(t)
+    }, 1000)
     return () => clearInterval(interval)
   }, [isPaused, clockTimestamp])
+
+  // Persist the durable session slice so a reload or sleep resumes where you
+  // left off. totalKnittingTime is folded in, so the snapshot is always a
+  // valid paused state (restored sessions wake paused).
+  useEffect(() => {
+    saveSession({
+      sessionDetails,
+      hasStarted,
+      rowCount,
+      startingRow,
+      rowTimestampsMs,
+      knittingTime: totalKnittingTime,
+      anomalyAlertDisabled,
+      consecutiveSlowRows,
+    })
+  }, [sessionDetails, hasStarted, rowCount, startingRow, rowTimestampsMs, totalKnittingTime, anomalyAlertDisabled, consecutiveSlowRows])
 
   // Opt-in keyboard focus outlines (off by default to avoid rings during spacebar use)
   useEffect(() => {

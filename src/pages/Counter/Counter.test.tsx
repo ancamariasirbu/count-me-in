@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { render, screen, fireEvent, act } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { MemoryRouter, Routes, Route } from 'react-router-dom'
 import Counter from './Counter'
+import Onboarding from '../Onboarding/Onboarding'
 
 function renderCounter(state = { projectName: 'Test Project', sessionNumber: '1' }) {
   return render(
@@ -13,6 +14,7 @@ function renderCounter(state = { projectName: 'Test Project', sessionNumber: '1'
 
 beforeEach(() => {
   vi.useFakeTimers()
+  localStorage.clear()
 })
 
 afterEach(() => {
@@ -412,5 +414,62 @@ describe('stats display', () => {
 
     expect(screen.queryByText(/~/)).not.toBeInTheDocument()
     expect(screen.getByText('avg / row')).toBeInTheDocument()
+  })
+})
+
+describe('persistence', () => {
+  const SAVED = {
+    sessionDetails: {
+      projectName: 'Saved Project',
+      sessionNumber: '2',
+      garmentType: '',
+      size: '',
+      stitchPattern: ['Not sure'],
+    },
+    hasStarted: true,
+    rowCount: 7,
+    startingRow: 0,
+    rowTimestampsMs: [],
+    knittingTime: 0,
+    anomalyAlertDisabled: false,
+    consecutiveSlowRows: 0,
+  }
+
+  it('restores a saved session as paused on reload', () => {
+    // A reload renders with navigation action POP (and BrowserRouter would keep
+    // the stale router state) — the saved session must win over that state.
+    localStorage.setItem('count-me-in:session', JSON.stringify(SAVED))
+
+    render(
+      <MemoryRouter initialEntries={[{ pathname: '/counter', state: { projectName: 'Stale', sessionNumber: '9' } }]}>
+        <Counter />
+      </MemoryRouter>
+    )
+
+    expect(screen.getByText('Saved Project')).toBeInTheDocument()
+    expect(screen.getByText('7')).toBeInTheDocument()
+    // A restored session always wakes paused
+    expect(screen.getByText('Resume')).toBeInTheDocument()
+    expect(screen.queryByText('Stale')).not.toBeInTheDocument()
+  })
+
+  it('starts fresh from onboarding (Skip), ignoring a saved session', () => {
+    // Skip pushes to /counter — a PUSH navigation must start a new session,
+    // even if the onboarding page itself had been reloaded first.
+    localStorage.setItem('count-me-in:session', JSON.stringify(SAVED))
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route path="/" element={<Onboarding />} />
+          <Route path="/counter" element={<Counter />} />
+        </Routes>
+      </MemoryRouter>
+    )
+
+    fireEvent.click(screen.getByText('Skip'))
+
+    expect(screen.getByText('Start')).toBeInTheDocument()
+    expect(screen.queryByText('Saved Project')).not.toBeInTheDocument()
   })
 })
