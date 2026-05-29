@@ -12,6 +12,26 @@ const stitchPatterns = [
   'Not sure',
 ]
 
+const garmentTypes = [
+  'Sweater / cardigan',
+  'Top',
+  'Skirt',
+  'Dress',
+  'Slipover',
+  'Vest',
+  'Camisole',
+  'Blouse',
+  'Jacket',
+  'Hat',
+  'Scarf',
+  'Mittens',
+  'Socks',
+  'Slippers',
+  'Shawl',
+  'Blanket',
+  'Other',
+]
+
 const defaultValues = {
   projectName: '',
   sessionNumber: '',
@@ -65,121 +85,144 @@ function Onboarding() {
 
   return (
     <div className={styles.page}>
-      <div className={styles.card}>
-        <h1 className={styles.title}>Count Me In</h1>
-        <p className={styles.subtitle}>Tell us about your project — or skip and start counting.</p>
-
-        <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.field}>
-            <label htmlFor="projectName">Project name</label>
-            <input
-              id="projectName"
-              name="projectName"
-              type="text"
-              placeholder="Moby Sweater"
-              value={form.projectName}
-              onChange={handleChange}
-            />
+      <div className={styles.hero}>
+        <div className={styles.heroInner}>
+          <div>
+            <p className={styles.wordmark}>Count Me In</p>
+            <h1 className={styles.title}>Every<br />row<br /><em>counts.</em></h1>
+            <p className={styles.subtitle}>
+              Track your progress, catch missed rows, and knit with confidence.
+            </p>
           </div>
-
-          <div className={styles.field}>
-            <label htmlFor="sessionNumber">Session number</label>
-            <input
-              id="sessionNumber"
-              name="sessionNumber"
-              type="number"
-              placeholder="3"
-              min="1"
-              value={form.sessionNumber}
-              onChange={handleChange}
-            />
+          <div className={styles.heroBottom}>
+            <div className={styles.statChip}>
+              <span className={styles.dot} />
+              <span>row timing &amp; averages</span>
+            </div>
+            <div className={styles.statChip}>
+              <span className={styles.dot} />
+              <span>missed row detection</span>
+            </div>
+            <div className={styles.statChip}>
+              <span className={styles.dot} />
+              <span>session history</span>
+            </div>
           </div>
+        </div>
+      </div>
 
-          <div className={styles.field}>
-            <label htmlFor="garmentType">Garment type</label>
-            <select
-              id="garmentType"
-              name="garmentType"
-              value={form.garmentType}
-              onChange={handleChange}
-            >
-              <option value="">Select a garment</option>
-              <option value="Sweater / cardigan">Sweater / cardigan</option>
-              <option value="Top">Top</option>
-              <option value="Skirt">Skirt</option>
-              <option value="Dress">Dress</option>
-              <option value="Slipover">Slipover</option>
-              <option value="Vest">Vest</option>
-              <option value="Camisole">Camisole</option>
-              <option value="Blouse">Blouse</option>
-              <option value="Jacket">Jacket</option>
-              <option value="Hat">Hat</option>
-              <option value="Scarf">Scarf</option>
-              <option value="Mittens">Mittens</option>
-              <option value="Socks">Socks</option>
-              <option value="Slippers">Slippers</option>
-              <option value="Shawl">Shawl</option>
-              <option value="Blanket">Blanket</option>
-              <option value="Other">Other</option>
-            </select>
-          </div>
+      <div className={styles.formPanel}>
+        <div className={styles.formInner}>
+          <p className={styles.formHeading}>Your project</p>
 
-          <div className={styles.field}>
-            <label htmlFor="size">Size</label>
-            <input
-              id="size"
-              name="size"
-              type="text"
-              placeholder="M"
-              value={form.size}
-              onChange={handleChange}
-            />
-          </div>
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.row2}>
+              <div className={styles.field}>
+                <label htmlFor="projectName" className={styles.label}>Project name</label>
+                <input
+                  className={styles.input}
+                  id="projectName"
+                  name="projectName"
+                  type="text"
+                  placeholder="Moby Sweater"
+                  value={form.projectName}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="sessionNumber" className={styles.label}>Session no.</label>
+                <input
+                  className={styles.input}
+                  id="sessionNumber"
+                  name="sessionNumber"
+                  type="number"
+                  placeholder="3"
+                  min="1"
+                  value={form.sessionNumber}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
 
-          <div className={styles.toggleRow}>
-            <div className={styles.toggleInfo}>
-              <span className={styles.toggleLabel}>Missed row alerts</span>
-              <span className={styles.tooltipAnchor}>
-                ?
-                <span className={styles.tooltip}>
-                  Tracks your average time/row to detect missed rows. Tip: when switching from a small section to a larger section (e.g. joining in the round) it's best to reset the average.
+            <div className={styles.row2}>
+              <div className={styles.field}>
+                <label htmlFor="garmentType" className={styles.label}>Project type</label>
+                <div className={styles.selectWrap}>
+                  <select
+                    className={styles.select}
+                    id="garmentType"
+                    name="garmentType"
+                    value={form.garmentType}
+                    onChange={handleChange}
+                  >
+                    <option value="">select...</option>
+                    {garmentTypes.map(type => (
+                      <option key={type} value={type}>{type}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+              <div className={styles.field}>
+                <label htmlFor="size" className={styles.label}>Size</label>
+                <input
+                  className={styles.input}
+                  id="size"
+                  name="size"
+                  type="text"
+                  placeholder="M"
+                  value={form.size}
+                  onChange={handleChange}
+                />
+              </div>
+            </div>
+
+            <div className={styles.field}>
+              <label className={styles.label}>Stitch pattern</label>
+              <div className={styles.pills}>
+                {stitchPatterns.map(pattern => (
+                  <label key={pattern} className={styles.pill}>
+                    <input
+                      type="checkbox"
+                      value={pattern}
+                      checked={form.stitchPattern.includes(pattern)}
+                      onChange={handleStitchPatternChange}
+                    />
+                    {pattern}
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div className={styles.toggleRow}>
+              <div className={styles.toggleInfo}>
+                <span className={styles.toggleLabel}>Missed row alerts</span>
+                <span className={styles.tooltipAnchor}>
+                  ?
+                  <span className={styles.tooltip}>
+                    Tracks your average time/row to detect missed rows. Tip: when switching from a small section to a larger section (e.g. joining in the round) it's best to reset the average.
+                  </span>
                 </span>
-              </span>
+              </div>
+              <button
+                type="button"
+                className={`${styles.toggle} ${form.anomalyAlertsEnabled ? styles.toggleOn : ''}`}
+                onClick={() => setForm({ ...form, anomalyAlertsEnabled: !form.anomalyAlertsEnabled })}
+                aria-label="toggle missed row alerts"
+              />
             </div>
-            <button
-              type="button"
-              className={`${styles.pillToggle} ${form.anomalyAlertsEnabled ? styles.pillToggleOn : ''}`}
-              onClick={() => setForm({ ...form, anomalyAlertsEnabled: !form.anomalyAlertsEnabled })}
-              aria-label="toggle missed row alerts"
-            />
-          </div>
 
-          <div className={styles.field}>
-            <label>Stitch pattern</label>
-            <div className={styles.checkboxGroup}>
-              {stitchPatterns.map(pattern => (
-                <label key={pattern} className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    value={pattern}
-                    checked={form.stitchPattern.includes(pattern)}
-                    onChange={handleStitchPatternChange}
-                  />
-                  {pattern}
-                </label>
-              ))}
+            <div className={styles.divider} />
+
+            <div className={styles.actions}>
+              <button type="button" className={styles.skip} onClick={handleSkip}>
+                Skip
+              </button>
+              <button type="submit" className={styles.submit}>
+                Let's knit
+              </button>
             </div>
-          </div>
-
-          <div className={styles.actions}>
-            <button type="button" className={styles.skip} onClick={handleSkip}>
-              Skip
-            </button>
-            <button type="submit" className={styles.submit}>
-              Let's knit
-            </button>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
 
       {showConfirm && (

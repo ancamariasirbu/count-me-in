@@ -34,8 +34,8 @@ describe('initial render', () => {
   it('shows all form fields', () => {
     renderOnboarding()
     expect(screen.getByLabelText('Project name')).toBeInTheDocument()
-    expect(screen.getByLabelText('Session number')).toBeInTheDocument()
-    expect(screen.getByLabelText('Garment type')).toBeInTheDocument()
+    expect(screen.getByLabelText('Session no.')).toBeInTheDocument()
+    expect(screen.getByLabelText('Project type')).toBeInTheDocument()
     expect(screen.getByLabelText('Size')).toBeInTheDocument()
   })
 
@@ -109,7 +109,7 @@ describe('filled form submission', () => {
     fireEvent.change(screen.getByLabelText('Project name'), {
       target: { value: 'Moby Sweater' },
     })
-    fireEvent.change(screen.getByLabelText('Session number'), {
+    fireEvent.change(screen.getByLabelText('Session no.'), {
       target: { value: '3' },
     })
     fireEvent.click(screen.getByText("Let's knit"))

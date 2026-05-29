@@ -1,29 +1,130 @@
 .page {
   min-height: 100dvh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px;
+  display: grid;
+  grid-template-columns: 4fr 5fr;
+  background-color: var(--bg);
+  background-image:
+    radial-gradient(circle, rgba(212, 112, 140, 0.12) 1.5px, transparent 1.5px),
+    radial-gradient(circle, rgba(138, 184, 160, 0.10) 1px, transparent 1px);
+  background-size: 32px 32px, 20px 20px;
+  background-position: 0 0, 10px 10px;
+  font-family: 'Inter', sans-serif;
 }
 
-.card {
-  background: var(--bg-alt);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 40px;
+/* ── Left: hero ── */
+
+.hero {
+  padding: 64px 56px;
+  display: flex;
+  justify-content: flex-end;
+  position: relative;
+}
+
+.heroInner {
   width: 100%;
-  max-width: 480px;
-  box-shadow: var(--shadow);
+  max-width: 360px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 160px;
+}
+
+.wordmark {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-indent: 2px;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .title {
-  font-size: 28px;
-  margin-bottom: 8px;
+  font-family: var(--serif);
+  font-size: clamp(44px, 6vw, 68px);
+  font-weight: 500;
+  line-height: 1.08;
+  color: var(--text);
+  margin-top: -2px;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.title em {
+  font-style: italic;
+  color: var(--accent);
 }
 
 .subtitle {
+  font-family: var(--serif);
+  font-size: 15px;
+  font-style: italic;
+  color: var(--text-muted);
+  margin-top: 18px;
+  line-height: 1.6;
+  max-width: 300px;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.heroBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.statChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-alt);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 14px;
+  width: fit-content;
+}
+
+.statChip .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+
+.statChip span {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  color: var(--text-muted);
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+/* ── Right: form ── */
+
+.formPanel {
+  background: rgba(248, 228, 238, 0.7);
+  border-left: 1px solid var(--border);
+  padding: 64px 56px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.formInner {
+  width: 100%;
+  max-width: 400px;
+}
+
+.formHeading {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
   color: var(--text-muted);
   margin-bottom: 32px;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .form {
@@ -32,75 +133,271 @@
   gap: 20px;
 }
 
+.row2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 5px;
 }
 
-.field label {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
+.label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
-.field input,
-.field select {
+.input,
+.select {
   padding: 10px 14px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: 10px;
   background: var(--bg);
   color: var(--text);
-  font-size: 15px;
-  font-family: inherit;
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
   transition: border-color 0.2s;
+  -webkit-font-smoothing: subpixel-antialiased;
+  appearance: none;
+  width: 100%;
 }
 
-.field input:focus,
-.field select:focus {
+.selectWrap {
+  position: relative;
+}
+
+.selectWrap::after {
+  content: '›';
+  position: absolute;
+  right: 13px;
+  top: 50%;
+  transform: translateY(-50%) rotate(90deg);
+  color: var(--text-muted);
+  font-size: 16px;
+  pointer-events: none;
+}
+
+.input:focus,
+.select:focus {
   outline: none;
   border-color: var(--accent);
 }
 
-.field input::placeholder {
-  color: var(--text-muted);
+.input::placeholder {
+  color: var(--accent-light);
 }
 
-.checkboxGroup {
+/* ── Stitch pattern pills ── */
+
+.pills {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
 }
 
-.checkboxLabel {
-  display: flex;
+.pill {
+  display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  padding: 5px 12px;
   border: 1px solid var(--border);
   border-radius: 20px;
   cursor: pointer;
-  font-size: 14px;
-  transition: border-color 0.2s, background 0.2s;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  background: var(--bg);
+  transition: border-color 0.2s, background 0.2s, color 0.2s;
+  -webkit-font-smoothing: subpixel-antialiased;
+  user-select: none;
 }
 
-.checkboxLabel:has(input:checked) {
-  border-color: var(--accent);
-  background: var(--accent-light);
-}
-
-.checkboxLabel input {
+.pill input {
   display: none;
 }
+
+.pill:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+
+.pill:has(input:checked) {
+  border-color: var(--accent);
+  background: var(--accent-light);
+  color: var(--text);
+}
+
+/* ── Missed-row toggle ── */
+
+.toggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggleInfo {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.toggleLabel {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0.10em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.tooltipAnchor {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  font-family: var(--mono);
+  font-size: 9px;
+  color: var(--text-muted);
+  cursor: default;
+  flex-shrink: 0;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.tooltip {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  line-height: 1.5;
+  width: 300px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  z-index: 1;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.tooltipAnchor:hover .tooltip {
+  opacity: 1;
+}
+
+.toggle {
+  width: 40px;
+  height: 22px;
+  border-radius: 11px;
+  border: none;
+  background: var(--border);
+  position: relative;
+  cursor: pointer;
+  padding: 0;
+  flex-shrink: 0;
+  transition: background 0.2s;
+}
+
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: white;
+  transition: transform 0.2s;
+}
+
+.toggleOn {
+  background: var(--accent);
+}
+
+.toggleOn::after {
+  transform: translateX(18px);
+}
+
+/* ── Actions ── */
+
+.divider {
+  height: 1px;
+  background: var(--border);
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.skip {
+  padding: 10px 20px;
+  border: 1.5px solid var(--border);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--text-muted);
+  font-family: var(--serif);
+  font-size: 14px;
+  font-style: italic;
+  cursor: pointer;
+  transition: border-color 0.2s, color 0.2s;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.skip:hover {
+  border-color: var(--text-muted);
+  color: var(--text);
+}
+
+.submit {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 10px;
+  background: var(--accent);
+  color: #fff;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.submit:hover {
+  opacity: 0.88;
+}
+
+/* ── Empty-form confirm modal ── */
 
 .overlay {
   position: fixed;
   inset: 0;
-  background: rgba(74, 55, 40, 0.4);
+  background: rgba(42, 21, 32, 0.4);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 10;
+  padding: 24px;
 }
 
 .modal {
@@ -117,8 +414,11 @@
 }
 
 .modal p {
+  font-family: var(--serif);
+  font-size: 15px;
   color: var(--text);
   line-height: 1.6;
+  -webkit-font-smoothing: subpixel-antialiased;
 }
 
 .modalActions {
@@ -127,129 +427,47 @@
   gap: 12px;
 }
 
-.toggleRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 4px 0;
-}
+/* ── Responsive: stack the panels ── */
 
-.toggleInfo {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
+@media (max-width: 1024px) {
+  .page {
+    grid-template-columns: 1fr;
+  }
 
-.toggleLabel {
-  font-size: 14px;
-  font-weight: 500;
-  color: var(--text);
-}
+  .hero {
+    padding: 48px 32px;
+    justify-content: center;
+  }
 
-.tooltipAnchor {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  font-size: 11px;
-  color: var(--text-muted);
-  cursor: default;
-  flex-shrink: 0;
-}
+  .heroInner {
+    max-width: none;
+    gap: 48px;
+    align-items: center;
+    text-align: center;
+  }
 
-.tooltip {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 0;
-  background: var(--bg);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px 12px;
-  font-size: 12px;
-  color: var(--text-muted);
-  line-height: 1.5;
-  width: 260px;
-  box-shadow: var(--shadow);
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.2s;
-  z-index: 1;
-}
+  .wordmark {
+    text-indent: 0;
+    position: relative;
+    top: -4px;
+  }
 
-.tooltipAnchor:hover .tooltip {
-  opacity: 1;
-}
+  .heroBottom {
+    align-items: center;
+  }
 
-.pillToggle {
-  width: 40px;
-  height: 22px;
-  border-radius: 11px;
-  border: none;
-  background: var(--border);
-  position: relative;
-  cursor: pointer;
-  transition: background 0.2s;
-  padding: 0;
-  flex-shrink: 0;
-}
+  .title {
+    font-size: 40px;
+  }
 
-.pillToggle::after {
-  content: '';
-  position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  background: white;
-  transition: transform 0.2s;
-}
+  .formPanel {
+    padding: 40px 32px;
+    border-left: none;
+    border-top: 1px solid var(--border);
+    align-items: stretch;
+  }
 
-.pillToggleOn {
-  background: var(--accent);
-}
-
-.pillToggleOn::after {
-  transform: translateX(18px);
-}
-
-.actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  margin-top: 8px;
-}
-
-.skip {
-  padding: 10px 20px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: transparent;
-  color: var(--text-muted);
-  font-size: 15px;
-  transition: border-color 0.2s, color 0.2s;
-}
-
-.skip:hover {
-  border-color: var(--text-muted);
-  color: var(--text);
-}
-
-.submit {
-  padding: 10px 20px;
-  border: none;
-  border-radius: 8px;
-  background: var(--accent);
-  color: var(--bg);
-  font-size: 15px;
-  font-weight: 500;
-  transition: opacity 0.2s;
-}
-
-.submit:hover {
-  opacity: 0.9;
+  .formInner {
+    max-width: none;
+  }
 }
