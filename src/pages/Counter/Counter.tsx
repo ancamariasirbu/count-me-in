@@ -330,6 +330,7 @@ function Counter() {
             ) : (
               <span className={styles.btnStart}>Start</span>
             )}
+            <span className={styles.incrementTooltip}>or press space</span>
           </button>
           <div className={styles.adjustRow}>
             <button className={`${styles.adjustBtn} ${!hasStarted || isPaused ? styles.paused : ''}`} onClick={decrement} disabled={!hasStarted || isPaused}>−</button>

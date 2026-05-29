@@ -158,6 +158,30 @@
   opacity: 0.4;
 }
 
+/* Discoverability hint for the spacebar shortcut (desktop hover only) */
+.incrementTooltip {
+  position: absolute;
+  bottom: calc(100% + 10px);
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--text-muted);
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.incrementBtn:hover:not(:disabled) .incrementTooltip {
+  opacity: 1;
+}
+
 .btnCountWrap {
   display: flex;
   flex-direction: column;
