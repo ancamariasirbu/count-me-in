@@ -28,7 +28,7 @@ describe('initial state', () => {
   it('shows the project name and session from onboarding', () => {
     renderCounter()
     expect(screen.getByText('Test Project')).toBeInTheDocument()
-    expect(screen.getByText('Session 1')).toBeInTheDocument()
+    expect(screen.getByText('Session 01')).toBeInTheDocument()
   })
 
   it('has Pause and Reset buttons disabled before starting', () => {
@@ -127,7 +127,7 @@ describe('reset', () => {
     fireEvent.click(screen.getByText('Start'))
     fireEvent.click(screen.getByText('Reset'))
 
-    expect(screen.getByText(/This will clear your row count/)).toBeInTheDocument()
+    expect(screen.getByText(/This will reset everything/)).toBeInTheDocument()
   })
 
   it('closes the modal without resetting when Cancel is clicked', () => {
@@ -379,13 +379,13 @@ describe('bell icon', () => {
 })
 
 describe('stats display', () => {
-  it('shows "just now" after the first increment', () => {
+  it('shows "now" after the first increment', () => {
     renderCounter()
 
     fireEvent.click(screen.getByText('Start'))
     fireEvent.click(screen.getByText('rows'))
 
-    expect(screen.getByText(/just now/)).toBeInTheDocument()
+    expect(screen.getByText('now')).toBeInTheDocument()
   })
 
   it('shows estimated average with ~ after 3 rows', () => {
@@ -411,6 +411,6 @@ describe('stats display', () => {
     }
 
     expect(screen.queryByText(/~/)).not.toBeInTheDocument()
-    expect(screen.getByText(/Average time\/row/)).toBeInTheDocument()
+    expect(screen.getByText('avg / row')).toBeInTheDocument()
   })
 })
