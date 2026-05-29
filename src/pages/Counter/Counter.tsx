@@ -45,7 +45,7 @@ function Counter() {
   })
 
   const displayName = sessionDetails.projectName || 'My Project'
-  const displaySession = sessionDetails.sessionNumber || '1'
+  const displaySession = String(parseInt(sessionDetails.sessionNumber) || 1).padStart(2, '0')
 
   const [hasStarted, setHasStarted] = useState(false)
   const [rowCount, setRowCount] = useState(0)
@@ -57,6 +57,7 @@ function Counter() {
   const [consecutiveSlowRows, setConsecutiveSlowRows] = useState(0)
   const [selectedAnomalyOption, setSelectedAnomalyOption] = useState<'yes' | 'no' | 'break' | 'reset' | null>(null)
   const [startingRow, setStartingRow] = useState(0)
+  const [showResetAvgConfirm, setShowResetAvgConfirm] = useState(false)
   const [showSettings, setShowSettings] = useState(false)
   const [settingsForm, setSettingsForm] = useState<SettingsForm>({
     projectName: projectName || '',
@@ -91,22 +92,27 @@ function Counter() {
       : null
 
   const showLastRow = rowCount >= 1 && timeSinceLastRow !== null
-  const showAvg = rowCount >= 3 && averageTimePerRow !== null
-  const avgIsEstimated = rowCount < 5
+  const showAvg = rowTimestampsMs.length >= 3 && averageTimePerRow !== null
+  const avgIsEstimated = rowTimestampsMs.length < 5
 
   function handleStart() {
     setHasStarted(true)
     setClockTimestamp(Date.now())
   }
 
+  function resetAverage() {
+    setRowTimestampsMs(ts => ts.length > 0 ? [ts[ts.length - 1]] : [])
+  }
+
   function increment() {
     if (!hasStarted || isPaused) return
+    const ANOMALY_AVG_FLOOR_MS = 2_000
     if (
       !anomalyAlertDisabled &&
       rowCount >= 5 &&
       averageTimePerRow !== null &&
       timeSinceLastRow !== null &&
-      timeSinceLastRow > 2 * averageTimePerRow
+      timeSinceLastRow > 2 * Math.max(averageTimePerRow, ANOMALY_AVG_FLOOR_MS)
     ) {
       setConsecutiveSlowRows(c => c + 1)
       setShowAnomalyAlert(true)
@@ -287,6 +293,7 @@ function Counter() {
   }, [])
 
   return (
+    <div className={styles.pageBackground}>
     <div className={styles.page}>
       <header className={styles.header}>
         <span className={styles.projectName}>{displayName}</span>
@@ -302,10 +309,10 @@ function Counter() {
             disabled={isPaused}
           >
             {hasStarted ? (
-              <>
+              <div className={styles.btnCountWrap}>
                 <span className={styles.btnCount}>{startingRow + rowCount}</span>
                 <span className={styles.btnLabel}>rows</span>
-              </>
+              </div>
             ) : (
               <span className={styles.btnStart}>Start</span>
             )}
@@ -316,9 +323,10 @@ function Counter() {
           </div>
         </div>
         <div className={styles.statsRow}>
-          <div className={styles.statPill}>
+          <div className={`${styles.statPill} ${styles.statPillAvg}`}>
             <span className={styles.statLabel}>avg / row</span>
             <span className={styles.statValue}>{showAvg ? <>{avgIsEstimated ? '~ ' : ''}{formatAvg(averageTimePerRow!)}</> : 'n/a'}</span>
+            <button className={styles.resetAvgBtn} onClick={() => setShowResetAvgConfirm(true)} disabled={!showAvg}>reset</button>
           </div>
           <div className={styles.statPill}>
             <span className={styles.statLabel}>last row</span>
@@ -338,52 +346,49 @@ function Counter() {
             <span className={styles.pauseTooltip}>or double-tap space</span>
           </button>
           <button
-            className={styles.secondaryBtn}
+            className={`${styles.secondaryBtn} ${styles.resetGlobalBtn}`}
             onClick={() => setShowResetConfirm(true)}
             disabled={!hasStarted}
           >
             Reset
+            <span className={styles.pauseTooltip}>resets count &amp; timing</span>
+          </button>
+        </div>
+        <div className={styles.bottomBar}>
+          <button
+            className={`${styles.iconBtn} ${anomalyAlertDisabled ? styles.iconBtnMuted : ''}`}
+            onClick={() => setAnomalyAlertDisabled(v => !v)}
+            aria-label="toggle missed row alerts"
+          >
+            {anomalyAlertDisabled ? (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
+                <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
+                <path d="M18 8a6 6 0 0 0-9.33-5"/>
+                <line x1="2" y1="2" x2="22" y2="22"/>
+              </svg>
+            ) : (
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            )}
+            alerts
+          </button>
+          <button
+            className={styles.iconBtn}
+            onClick={openSettings}
+            aria-label="open settings"
+          >
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="12" cy="12" r="3"/>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+            settings
           </button>
         </div>
       </footer>
-
-      <div className={styles.bottomBar}>
-        <button
-          className={`${styles.alertsMutedBtn} ${anomalyAlertDisabled ? styles.alertsMutedOff : styles.alertsMutedOn}`}
-          onClick={() => setAnomalyAlertDisabled(v => !v)}
-          aria-label="toggle missed row alerts"
-        >
-          {anomalyAlertDisabled ? (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-              <path d="M18.63 13A17.89 17.89 0 0 1 18 8"/>
-              <path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h14"/>
-              <path d="M18 8a6 6 0 0 0-9.33-5"/>
-              <line x1="2" y1="2" x2="22" y2="22"/>
-            </svg>
-          ) : (
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
-            </svg>
-          )}
-          <span className={styles.alertsMutedTooltip}>
-            {anomalyAlertDisabled
-              ? <>missed row alerts are off <strong>·</strong> click to re-enable</>
-              : <>missed row alerts are on <strong>·</strong> click to disable</>}
-          </span>
-        </button>
-        <button
-          className={styles.settingsBtn}
-          onClick={openSettings}
-          aria-label="open settings"
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="12" cy="12" r="3"/>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
-          </svg>
-        </button>
-      </div>
 
       {showAnomalyAlert && (
         <div className={styles.overlay}>
@@ -476,12 +481,28 @@ function Counter() {
       {showResetConfirm && (
         <div className={styles.overlay}>
           <div className={styles.modal}>
-            <p>This will clear your row count and all timing data. Are you sure?</p>
+            <p>This will reset everything. Are you sure?</p>
             <div className={styles.modalActions}>
-              <button className={styles.secondaryBtn} onClick={() => setShowResetConfirm(false)}>
+              <button className={`${styles.secondaryBtn}`} onClick={() => setShowResetConfirm(false)}>
                 Cancel
               </button>
               <button className={styles.resetBtn} onClick={confirmReset}>
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showResetAvgConfirm && (
+        <div className={styles.overlay}>
+          <div className={styles.modal}>
+            <p>This will reset your average time/row. Are you sure?</p>
+            <div className={styles.modalActions}>
+              <button className={`${styles.secondaryBtn}`} onClick={() => setShowResetAvgConfirm(false)}>
+                Cancel
+              </button>
+              <button className={styles.resetBtn} onClick={() => { resetAverage(); setShowResetAvgConfirm(false) }}>
                 Reset
               </button>
             </div>
@@ -610,7 +631,7 @@ function Counter() {
             </div>
 
             <div className={styles.settingsActions}>
-              <button className={styles.secondaryBtn} onClick={() => setShowSettings(false)}>
+              <button className={`${styles.secondaryBtn}`} onClick={() => setShowSettings(false)}>
                 Cancel
               </button>
               <button className={styles.saveBtn} onClick={saveSettings}>
@@ -620,6 +641,7 @@ function Counter() {
           </div>
         </div>
       )}
+    </div>
     </div>
   )
 }
