@@ -39,6 +39,12 @@ describe('formatAvg', () => {
 })
 
 describe('formatGapDuration', () => {
+  it('returns seconds for under a minute', () => {
+    expect(formatGapDuration(1_000)).toBe('1 second')
+    expect(formatGapDuration(15_000)).toBe('15 seconds')
+    expect(formatGapDuration(59_000)).toBe('59 seconds')
+  })
+
   it('returns minutes for under an hour', () => {
     expect(formatGapDuration(60_000)).toBe('1 minute')
     expect(formatGapDuration(120_000)).toBe('2 minutes')

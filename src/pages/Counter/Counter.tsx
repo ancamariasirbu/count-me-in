@@ -51,17 +51,11 @@ interface PersistedSession {
 
 const STORAGE_KEY = 'count-me-in:session'
 
-// A single tick gap larger than this counts as "inactive" rather than normal
-// jitter (the ticker runs at ~1s; anything beyond a few seconds means the
-// process wasn't running or the timer was heavily throttled).
-const INACTIVE_TICK_THRESHOLD_MS = 5_000
-
-// We accumulate inactive-tick gaps. Once the total crosses this, we ask the
-// user whether to count that time as knitting. Below this, gaps are silently
-// counted — the window is small enough that it can't meaningfully inflate
-// the average. The accumulator resets on a normal tick (so isolated short
-// gaps like tab switches don't pile up across the session) or on user action.
-const GAP_PROMPT_THRESHOLD_MS = 60_000
+// If a tick arrives this much later than expected, we ask whether the gap
+// should count as knitting time. Brief OS-level dismissals (mobile control
+// center, screen luminosity, quick app switches) sit comfortably under this,
+// so they don't prompt — anything longer does.
+const GAP_PROMPT_THRESHOLD_MS = 10_000
 
 function loadSession(): PersistedSession | null {
   try {
@@ -261,14 +255,10 @@ function Counter() {
     setSelectedAnomalyOption(null)
     setConsecutiveSlowRows(0)
     setStartingRow(0)
-    accumulatedInactiveRef.current = 0
-    preGapKnittingTimeRef.current = null
     setGapPrompt(null)
   }
 
   function handleGapCount() {
-    accumulatedInactiveRef.current = 0
-    preGapKnittingTimeRef.current = null
     setGapPrompt(null)
   }
 
@@ -277,8 +267,6 @@ function Counter() {
       setStoredTotalKnittingTime(gapPrompt.preGapKnittingTime)
       setClockTimestamp(Date.now())
     }
-    accumulatedInactiveRef.current = 0
-    preGapKnittingTimeRef.current = null
     setGapPrompt(null)
   }
 
@@ -308,49 +296,69 @@ function Counter() {
     setShowSettings(false)
   }
 
-  // Ticker: only runs when there is an active period. When a tick arrives
-  // far later than expected, the process either wasn't running (sleep) or
-  // the timer was heavily throttled. macOS in particular may fire the timer
-  // in short bursts during sleep, so a single tick can underreport the real
-  // sleep duration — we accumulate consecutive inactive-tick gaps to cover
-  // that case. A normal tick (gap close to 1s) resets the accumulator below
-  // threshold, so an isolated short tab switch doesn't carry over and pile
-  // up across the session.
+  // Detection has two paths so we get accurate gap durations regardless of
+  // why the JS was inactive:
+  //   1. visibilitychange — fires immediately when the tab is hidden/shown,
+  //      so any tab-away period is measured exactly (no dependence on
+  //      Chrome's timer throttling).
+  //   2. setInterval gap — catches sleep that happens while the tab is in
+  //      the foreground (visibility doesn't change for lid-close-on-focus).
+  //      Subsequent gaps accumulate, because macOS may fire the timer in
+  //      short bursts during sleep — without accumulation a long single
+  //      sleep would underreport.
   const lastTickRef = useRef(Date.now())
-  const accumulatedInactiveRef = useRef(0)
-  const preGapKnittingTimeRef = useRef<number | null>(null)
+  const hiddenAtRef = useRef<number | null>(null)
   useEffect(() => {
     if (isPaused || clockTimestamp === null) return
     lastTickRef.current = Date.now()
-    accumulatedInactiveRef.current = 0
-    preGapKnittingTimeRef.current = null
+    hiddenAtRef.current = document.visibilityState === 'hidden' ? Date.now() : null
+
+    function onVisibilityChange() {
+      if (document.visibilityState === 'hidden') {
+        hiddenAtRef.current = Date.now()
+        return
+      }
+      if (hiddenAtRef.current === null) return
+      const gap = Date.now() - hiddenAtRef.current
+      const hiddenAt = hiddenAtRef.current
+      hiddenAtRef.current = null
+      // Skip the setInterval path's gap on the next tick — the visibility
+      // gap already covers it, otherwise the same time would prompt twice.
+      lastTickRef.current = Date.now()
+      if (gap > GAP_PROMPT_THRESHOLD_MS) {
+        setGapPrompt(prev =>
+          prev === null
+            ? {
+                gapMs: gap,
+                preGapKnittingTime: storedTotalKnittingTime + (hiddenAt - clockTimestamp),
+              }
+            : prev
+        )
+      }
+    }
+    document.addEventListener('visibilitychange', onVisibilityChange)
+
     const interval = setInterval(() => {
       const t = Date.now()
       const gap = t - lastTickRef.current
-      if (gap > INACTIVE_TICK_THRESHOLD_MS) {
-        if (preGapKnittingTimeRef.current === null) {
-          preGapKnittingTimeRef.current = storedTotalKnittingTime + (lastTickRef.current - clockTimestamp)
-        }
-        accumulatedInactiveRef.current += gap
-        if (accumulatedInactiveRef.current > GAP_PROMPT_THRESHOLD_MS) {
-          setGapPrompt({
-            gapMs: accumulatedInactiveRef.current,
-            preGapKnittingTime: preGapKnittingTimeRef.current,
-          })
-        }
-      } else if (
-        accumulatedInactiveRef.current > 0 &&
-        accumulatedInactiveRef.current <= GAP_PROMPT_THRESHOLD_MS
-      ) {
-        // A normal tick after a brief inactive period — silently count it
-        // and reset, so isolated short gaps don't add up over time.
-        accumulatedInactiveRef.current = 0
-        preGapKnittingTimeRef.current = null
+      if (gap > GAP_PROMPT_THRESHOLD_MS) {
+        setGapPrompt(prev =>
+          prev === null
+            ? {
+                gapMs: gap,
+                preGapKnittingTime: storedTotalKnittingTime + (lastTickRef.current - clockTimestamp),
+              }
+            : { ...prev, gapMs: prev.gapMs + gap }
+        )
       }
       lastTickRef.current = t
       setNow(t)
     }, 1000)
-    return () => clearInterval(interval)
+
+    return () => {
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+    }
   }, [isPaused, clockTimestamp, storedTotalKnittingTime])
 
   // Persist the durable session slice so a reload or sleep resumes where you

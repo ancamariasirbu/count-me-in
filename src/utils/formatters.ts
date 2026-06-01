@@ -16,6 +16,10 @@ export function formatAvg(ms: number): string {
 }
 
 export function formatGapDuration(ms: number): string {
+  const totalSeconds = Math.round(ms / 1000)
+  if (totalSeconds < 60) {
+    return `${totalSeconds} second${totalSeconds === 1 ? '' : 's'}`
+  }
   const totalMinutes = Math.round(ms / 60_000)
   if (totalMinutes < 60) {
     return `${totalMinutes} minute${totalMinutes === 1 ? '' : 's'}`
