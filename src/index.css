@@ -5,16 +5,42 @@
 }
 
 :root {
+  /* === Default: Blush === */
   --bg: #fef2f7;
   --bg-alt: #f8e4ee;
   --text: #2a1520;
   --text-muted: #9a6878;
   --accent: #d4708c;
   --accent-light: #eec4d4;
+  --accent-faint: rgba(212, 112, 140, 0.07);
   --border: #eec4d4;
   --surface: #fffafc;
   --text-faint: #d4a8bc;
   --shadow: 0 4px 16px rgba(42, 21, 32, 0.08);
+
+  /* Increment button */
+  --btn-bg: linear-gradient(145deg, #e090a8 0%, #c86080 100%);
+  --btn-color: #fff0f4;
+  --btn-border: none;
+  --btn-shadow: 0 8px 40px rgba(212, 112, 140, 0.30), 0 2px 8px rgba(212, 112, 140, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.20);
+  --btn-shadow-active: 0 4px 20px rgba(212, 112, 140, 0.35), inset 0 2px 10px rgba(0, 0, 0, 0.08);
+
+  /* Orbit ring & background dots */
+  --orbit-border: rgba(212, 112, 140, 0.25);
+  --orbit-icon: '✿';
+  --dot-a: rgba(212, 112, 140, 0.12);
+  --dot-b: rgba(138, 184, 160, 0.10);
+
+  /* Pause button */
+  --pause-color: #5a9878;
+  --pause-bg: rgba(138, 184, 160, 0.10);
+  --pause-border: rgba(138, 184, 160, 0.35);
+
+  /* Overlay */
+  --overlay-bg: rgba(42, 21, 32, 0.35);
+
+  /* Onboarding form panel */
+  --form-panel-bg: rgba(248, 228, 238, 0.7);
 
   --sans: system-ui, 'Segoe UI', Roboto, sans-serif;
   --serif: 'Playfair Display', Georgia, serif;
@@ -25,6 +51,172 @@
   line-height: 1.5;
   color: var(--text);
   background: var(--bg);
+}
+
+/* === Midnight === */
+[data-theme="midnight"] {
+  --bg: #0D1520;
+  --bg-alt: #162030;
+  --text: #E8EEF8;
+  --text-muted: #7090B0;
+  --text-faint: #507090;
+  --accent: #E8C870;
+  --accent-light: rgba(232, 200, 112, 0.28);
+  --accent-faint: rgba(232, 200, 112, 0.07);
+  --border: rgba(232, 200, 112, 0.12);
+  --surface: #162030;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+
+  --btn-bg: #162030;
+  --btn-color: #E8C870;
+  --btn-border: 1px solid rgba(232, 200, 112, 0.2);
+  --btn-shadow: 0 0 60px rgba(232, 200, 112, 0.08), 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(232, 200, 112, 0.06);
+  --btn-shadow-active: 0 0 40px rgba(232, 200, 112, 0.10), inset 0 2px 10px rgba(0, 0, 0, 0.30);
+
+  --orbit-border: rgba(232, 200, 112, 0.2);
+  --orbit-icon: '●';
+  --dot-a: transparent;
+  --dot-b: transparent;
+
+  --pause-color: #E8C870;
+  --pause-bg: rgba(232, 200, 112, 0.07);
+  --pause-border: rgba(232, 200, 112, 0.2);
+
+  --overlay-bg: rgba(0, 0, 0, 0.6);
+  --form-panel-bg: rgba(22, 32, 48, 0.85);
+  color-scheme: dark;
+}
+
+/* === Sage Garden === */
+[data-theme="sage"] {
+  --bg: #EBF0E4;
+  --bg-alt: #DAE3D0;
+  --text: #1A2414;
+  --text-muted: #5A7050;
+  --text-faint: #A0B890;
+  --accent: #3D6B35;
+  --accent-light: #C4D4B4;
+  --accent-faint: rgba(61, 107, 53, 0.08);
+  --border: #C4D4B4;
+  --surface: #F8FCF4;
+  --shadow: 0 4px 16px rgba(26, 36, 20, 0.08);
+
+  --btn-bg: var(--accent);
+  --btn-color: #F0F8EC;
+  --btn-border: none;
+  --btn-shadow: 0 8px 40px rgba(61, 107, 53, 0.30), 0 2px 8px rgba(61, 107, 53, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --btn-shadow-active: 0 4px 20px rgba(61, 107, 53, 0.35), inset 0 2px 10px rgba(0, 0, 0, 0.12);
+
+  --orbit-border: rgba(61, 107, 53, 0.3);
+  --orbit-icon: '●';
+  --dot-a: rgba(61, 107, 53, 0.07);
+  --dot-b: rgba(192, 120, 56, 0.06);
+
+  --pause-color: #C07838;
+  --pause-bg: rgba(192, 120, 56, 0.10);
+  --pause-border: rgba(192, 120, 56, 0.25);
+
+  --overlay-bg: rgba(26, 36, 20, 0.35);
+  --form-panel-bg: rgba(218, 227, 208, 0.7);
+}
+
+/* === Terracotta === */
+[data-theme="terracotta"] {
+  --bg: #F5EDE2;
+  --bg-alt: #EDD8C4;
+  --text: #2A1508;
+  --text-muted: #8A6040;
+  --text-faint: #C4A080;
+  --accent: #B84830;
+  --accent-light: #DEC4A4;
+  --accent-faint: rgba(184, 72, 48, 0.08);
+  --border: #DEC4A4;
+  --surface: #FFFFFF;
+  --shadow: 0 4px 16px rgba(42, 21, 8, 0.08);
+
+  --btn-bg: var(--accent);
+  --btn-color: #FDF0E8;
+  --btn-border: none;
+  --btn-shadow: 0 8px 40px rgba(184, 72, 48, 0.35), 0 2px 8px rgba(184, 72, 48, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --btn-shadow-active: 0 4px 20px rgba(184, 72, 48, 0.4), inset 0 2px 10px rgba(0, 0, 0, 0.15);
+
+  --orbit-border: rgba(184, 72, 48, 0.3);
+  --orbit-icon: '❁';
+  --dot-a: rgba(184, 72, 48, 0.08);
+  --dot-b: rgba(107, 138, 94, 0.08);
+
+  --pause-color: #6B8A5E;
+  --pause-bg: rgba(107, 138, 94, 0.08);
+  --pause-border: rgba(107, 138, 94, 0.3);
+
+  --overlay-bg: rgba(42, 21, 8, 0.35);
+  --form-panel-bg: rgba(237, 216, 196, 0.7);
+}
+
+/* === Indigo Dusk === */
+[data-theme="indigo"] {
+  --bg: #EEEAF8;
+  --bg-alt: #E2DDF0;
+  --text: #1A1628;
+  --text-muted: #6A6088;
+  --text-faint: #B0A8C8;
+  --accent: #4A38A8;
+  --accent-light: #8878C8;
+  --accent-faint: rgba(74, 56, 168, 0.07);
+  --border: #CCC4E8;
+  --surface: #F8F5FF;
+  --shadow: 0 4px 16px rgba(74, 56, 168, 0.08);
+
+  --btn-bg: linear-gradient(145deg, #5848C0 0%, #3A2898 100%);
+  --btn-color: #EAE8FF;
+  --btn-border: none;
+  --btn-shadow: 0 8px 40px rgba(74, 56, 168, 0.35), 0 2px 8px rgba(74, 56, 168, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+  --btn-shadow-active: 0 4px 20px rgba(74, 56, 168, 0.4), inset 0 2px 10px rgba(0, 0, 0, 0.15);
+
+  --orbit-border: rgba(74, 56, 168, 0.25);
+  --orbit-icon: '●';
+  --dot-a: transparent;
+  --dot-b: transparent;
+
+  --pause-color: #A87018;
+  --pause-bg: rgba(168, 112, 24, 0.08);
+  --pause-border: rgba(168, 112, 24, 0.28);
+
+  --overlay-bg: rgba(26, 22, 40, 0.35);
+  --form-panel-bg: rgba(226, 221, 240, 0.7);
+}
+
+/* === Cotton Candy === */
+[data-theme="cottonCandy"] {
+  --bg: #DCEEF3;
+  --bg-alt: #C8E4ED;
+  --text: #1A2E3A;
+  --text-muted: #5A788C;
+  --text-faint: #A8BCC8;
+  --accent: #F58A95;
+  --accent-light: #FFB6BA;
+  --accent-faint: rgba(245, 138, 149, 0.10);
+  --border: #B8D8E0;
+  --surface: #F0F8FA;
+  --shadow: 0 4px 16px rgba(26, 46, 58, 0.10);
+
+  --btn-bg: linear-gradient(145deg, #FFB6BA 0%, #F58A95 100%);
+  --btn-color: #FFF5F6;
+  --btn-border: none;
+  --btn-shadow: 0 8px 40px rgba(245, 138, 149, 0.40), 0 2px 8px rgba(245, 138, 149, 0.20), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  --btn-shadow-active: 0 4px 20px rgba(245, 138, 149, 0.45), inset 0 2px 10px rgba(0, 0, 0, 0.10);
+
+  --orbit-border: rgba(90, 149, 176, 0.35);
+  --orbit-icon: '❁';
+  --dot-a: transparent;
+  --dot-b: transparent;
+
+  --pause-color: #F58A95;
+  --pause-bg: rgba(245, 138, 149, 0.10);
+  --pause-border: rgba(245, 138, 149, 0.38);
+
+  --overlay-bg: rgba(26, 46, 58, 0.35);
+  --form-panel-bg: rgba(200, 228, 237, 0.7);
 }
 
 body {
