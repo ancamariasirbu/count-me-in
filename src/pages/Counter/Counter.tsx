@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigationType } from 'react-router-dom'
 import styles from './Counter.module.css'
-import { formatLastRow, formatAvg } from '../../utils/formatters'
+import { formatLastRow, formatAvg, formatGapDuration } from '../../utils/formatters'
 
 const stitchPatterns = [
   'Stockinette',
@@ -51,9 +51,17 @@ interface PersistedSession {
 
 const STORAGE_KEY = 'count-me-in:session'
 
-// If a tick arrives this much later than expected, the app was suspended
-// (machine slept or the tab was backgrounded for a while) — treat as a pause.
-const SUSPEND_GAP_MS = 10_000
+// A single tick gap larger than this counts as "inactive" rather than normal
+// jitter (the ticker runs at ~1s; anything beyond a few seconds means the
+// process wasn't running or the timer was heavily throttled).
+const INACTIVE_TICK_THRESHOLD_MS = 5_000
+
+// We accumulate inactive-tick gaps. Once the total crosses this, we ask the
+// user whether to count that time as knitting. Below this, gaps are silently
+// counted — the window is small enough that it can't meaningfully inflate
+// the average. The accumulator resets on a normal tick (so isolated short
+// gaps like tab switches don't pile up across the session) or on user action.
+const GAP_PROMPT_THRESHOLD_MS = 60_000
 
 function loadSession(): PersistedSession | null {
   try {
@@ -129,6 +137,7 @@ function Counter() {
   const [storedTotalKnittingTime, setStoredTotalKnittingTime] = useState(restored?.knittingTime ?? 0)
   const [clockTimestamp, setClockTimestamp] = useState<number | null>(null)
   const [now, setNow] = useState(Date.now())
+  const [gapPrompt, setGapPrompt] = useState<{ gapMs: number; preGapKnittingTime: number } | null>(null)
 
   const totalKnittingTime =
     clockTimestamp !== null
@@ -252,6 +261,25 @@ function Counter() {
     setSelectedAnomalyOption(null)
     setConsecutiveSlowRows(0)
     setStartingRow(0)
+    accumulatedInactiveRef.current = 0
+    preGapKnittingTimeRef.current = null
+    setGapPrompt(null)
+  }
+
+  function handleGapCount() {
+    accumulatedInactiveRef.current = 0
+    preGapKnittingTimeRef.current = null
+    setGapPrompt(null)
+  }
+
+  function handleGapDiscard() {
+    if (gapPrompt && clockTimestamp !== null) {
+      setStoredTotalKnittingTime(gapPrompt.preGapKnittingTime)
+      setClockTimestamp(Date.now())
+    }
+    accumulatedInactiveRef.current = 0
+    preGapKnittingTimeRef.current = null
+    setGapPrompt(null)
   }
 
   function openSettings() {
@@ -280,27 +308,50 @@ function Counter() {
     setShowSettings(false)
   }
 
-  // Ticker: only runs when there is an active period. If a tick arrives long
-  // after the previous one, the app was suspended (sleep / long background) —
-  // count active time only up to the last good tick, then auto-pause so the
-  // offline gap is never added to the knitting total.
+  // Ticker: only runs when there is an active period. When a tick arrives
+  // far later than expected, the process either wasn't running (sleep) or
+  // the timer was heavily throttled. macOS in particular may fire the timer
+  // in short bursts during sleep, so a single tick can underreport the real
+  // sleep duration — we accumulate consecutive inactive-tick gaps to cover
+  // that case. A normal tick (gap close to 1s) resets the accumulator below
+  // threshold, so an isolated short tab switch doesn't carry over and pile
+  // up across the session.
   const lastTickRef = useRef(Date.now())
+  const accumulatedInactiveRef = useRef(0)
+  const preGapKnittingTimeRef = useRef<number | null>(null)
   useEffect(() => {
     if (isPaused || clockTimestamp === null) return
     lastTickRef.current = Date.now()
+    accumulatedInactiveRef.current = 0
+    preGapKnittingTimeRef.current = null
     const interval = setInterval(() => {
       const t = Date.now()
-      if (t - lastTickRef.current > SUSPEND_GAP_MS) {
-        setStoredTotalKnittingTime(ms => ms + (lastTickRef.current - clockTimestamp))
-        setClockTimestamp(null)
-        setIsPaused(true)
-        return
+      const gap = t - lastTickRef.current
+      if (gap > INACTIVE_TICK_THRESHOLD_MS) {
+        if (preGapKnittingTimeRef.current === null) {
+          preGapKnittingTimeRef.current = storedTotalKnittingTime + (lastTickRef.current - clockTimestamp)
+        }
+        accumulatedInactiveRef.current += gap
+        if (accumulatedInactiveRef.current > GAP_PROMPT_THRESHOLD_MS) {
+          setGapPrompt({
+            gapMs: accumulatedInactiveRef.current,
+            preGapKnittingTime: preGapKnittingTimeRef.current,
+          })
+        }
+      } else if (
+        accumulatedInactiveRef.current > 0 &&
+        accumulatedInactiveRef.current <= GAP_PROMPT_THRESHOLD_MS
+      ) {
+        // A normal tick after a brief inactive period — silently count it
+        // and reset, so isolated short gaps don't add up over time.
+        accumulatedInactiveRef.current = 0
+        preGapKnittingTimeRef.current = null
       }
       lastTickRef.current = t
       setNow(t)
     }, 1000)
     return () => clearInterval(interval)
-  }, [isPaused, clockTimestamp])
+  }, [isPaused, clockTimestamp, storedTotalKnittingTime])
 
   // Persist the durable session slice so a reload or sleep resumes where you
   // left off. totalKnittingTime is folded in, so the snapshot is always a
@@ -632,6 +683,22 @@ function Counter() {
               </button>
               <button className={styles.resetBtn} onClick={() => { resetAverage(); setShowResetAvgConfirm(false) }}>
                 Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {gapPrompt && (
+        <div className={styles.overlay}>
+          <div className={styles.modal}>
+            <p>It's been ~{formatGapDuration(gapPrompt.gapMs)} since you were active. Should this count as knitting?</p>
+            <div className={styles.modalActions}>
+              <button className={styles.resetBtn} onClick={handleGapDiscard}>
+                Discard
+              </button>
+              <button className={styles.secondaryBtn} onClick={handleGapCount}>
+                Count it
               </button>
             </div>
           </div>

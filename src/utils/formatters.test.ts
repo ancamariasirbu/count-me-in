@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { formatLastRow, formatAvg } from './formatters'
+import { formatLastRow, formatAvg, formatGapDuration } from './formatters'
 
 describe('formatLastRow', () => {
   it('returns "now" for under 30 seconds', () => {
@@ -35,5 +35,29 @@ describe('formatAvg', () => {
     expect(formatAvg(60000)).toBe('1m 0s')
     expect(formatAvg(90000)).toBe('1m 30s')
     expect(formatAvg(150000)).toBe('2m 30s')
+  })
+})
+
+describe('formatGapDuration', () => {
+  it('returns minutes for under an hour', () => {
+    expect(formatGapDuration(60_000)).toBe('1 minute')
+    expect(formatGapDuration(120_000)).toBe('2 minutes')
+    expect(formatGapDuration(45 * 60_000)).toBe('45 minutes')
+  })
+
+  it('rounds to the nearest minute', () => {
+    expect(formatGapDuration(90_000)).toBe('2 minutes')
+    expect(formatGapDuration(89_000)).toBe('1 minute')
+  })
+
+  it('returns just hours when minutes is zero', () => {
+    expect(formatGapDuration(60 * 60_000)).toBe('1 hour')
+    expect(formatGapDuration(2 * 60 * 60_000)).toBe('2 hours')
+  })
+
+  it('returns hours and minutes for 1+ hour with remainder', () => {
+    expect(formatGapDuration(90 * 60_000)).toBe('1 hour 30 minutes')
+    expect(formatGapDuration(125 * 60_000)).toBe('2 hours 5 minutes')
+    expect(formatGapDuration(61 * 60_000)).toBe('1 hour 1 minute')
   })
 })
