@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useLocation, useNavigationType } from 'react-router-dom'
 import styles from './Counter.module.css'
 import { formatLastRow, formatAvg, formatGapDuration } from '../../utils/formatters'
+import { CustomSelect } from '../../components/CustomSelect/CustomSelect'
+import { garmentTypes } from '../../constants/garmentTypes'
 
 const THEMES = [
   { id: 'blush', label: 'Blush' },
@@ -821,31 +823,15 @@ function Counter() {
               </div>
 
               <div className={styles.settingsField}>
-                <label htmlFor="settings-garmentType">Garment type</label>
-                <select
+                <label htmlFor="settings-garmentType">Project type</label>
+                <CustomSelect
                   id="settings-garmentType"
                   value={settingsForm.garmentType}
-                  onChange={e => setSettingsForm(f => ({ ...f, garmentType: e.target.value }))}
-                >
-                  <option value="">Select a garment</option>
-                  <option value="Sweater / cardigan">Sweater / cardigan</option>
-                  <option value="Top">Top</option>
-                  <option value="Skirt">Skirt</option>
-                  <option value="Dress">Dress</option>
-                  <option value="Slipover">Slipover</option>
-                  <option value="Vest">Vest</option>
-                  <option value="Camisole">Camisole</option>
-                  <option value="Blouse">Blouse</option>
-                  <option value="Jacket">Jacket</option>
-                  <option value="Hat">Hat</option>
-                  <option value="Scarf">Scarf</option>
-                  <option value="Mittens">Mittens</option>
-                  <option value="Socks">Socks</option>
-                  <option value="Slippers">Slippers</option>
-                  <option value="Shawl">Shawl</option>
-                  <option value="Blanket">Blanket</option>
-                  <option value="Other">Other</option>
-                </select>
+                  onChange={v => setSettingsForm(f => ({ ...f, garmentType: v }))}
+                  options={garmentTypes.map(t => ({ value: t, label: t }))}
+                  placeholder="select..."
+                  size="compact"
+                />
               </div>
 
               <div className={styles.settingsField}>

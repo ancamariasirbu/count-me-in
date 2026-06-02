@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './Onboarding.module.css'
+import { CustomSelect } from '../../components/CustomSelect/CustomSelect'
+import { garmentTypes } from '../../constants/garmentTypes'
 
 const stitchPatterns = [
   'Stockinette',
@@ -10,26 +12,6 @@ const stitchPatterns = [
   'Cables',
   'Texture',
   'Not sure',
-]
-
-const garmentTypes = [
-  'Sweater / cardigan',
-  'Top',
-  'Skirt',
-  'Dress',
-  'Slipover',
-  'Vest',
-  'Camisole',
-  'Blouse',
-  'Jacket',
-  'Hat',
-  'Scarf',
-  'Mittens',
-  'Socks',
-  'Slippers',
-  'Shawl',
-  'Blanket',
-  'Other',
 ]
 
 const defaultValues = {
@@ -147,20 +129,14 @@ function Onboarding() {
             <div className={styles.row2}>
               <div className={styles.field}>
                 <label htmlFor="garmentType" className={styles.label}>Project type</label>
-                <div className={styles.selectWrap}>
-                  <select
-                    className={styles.select}
-                    id="garmentType"
-                    name="garmentType"
-                    value={form.garmentType}
-                    onChange={handleChange}
-                  >
-                    <option value="">select...</option>
-                    {garmentTypes.map(type => (
-                      <option key={type} value={type}>{type}</option>
-                    ))}
-                  </select>
-                </div>
+                <CustomSelect
+                  id="garmentType"
+                  name="garmentType"
+                  value={form.garmentType}
+                  onChange={v => setForm(prev => ({ ...prev, garmentType: v }))}
+                  options={garmentTypes.map(t => ({ value: t, label: t }))}
+                  placeholder="select..."
+                />
               </div>
               <div className={styles.field}>
                 <label htmlFor="size" className={styles.label}>Size</label>

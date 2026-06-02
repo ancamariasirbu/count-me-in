@@ -138,7 +138,12 @@
 }
 
 :global([data-theme="cottonCandy"]) .settingsField input,
-:global([data-theme="cottonCandy"]) .settingsField select {
+:global([data-theme="cottonCandy"]) .settingsField button[aria-haspopup="listbox"] {
+  border-color: #EBCAD2;
+  background: #FFFFFF;
+}
+
+:global([data-theme="cottonCandy"]) .settingsField [role="listbox"] {
   border-color: #EBCAD2;
   background: #FFFFFF;
 }
@@ -274,6 +279,7 @@
   color: var(--btn-color);
   opacity: 0.75;
   position: relative;
+  padding-left: 2px;
 }
 
 .btnStart {
@@ -794,8 +800,7 @@
   color: var(--text-muted);
 }
 
-.settingsField input,
-.settingsField select {
+.settingsField input {
   padding: 8px 10px;
   border: 1px solid var(--border);
   border-radius: 8px;
@@ -809,10 +814,13 @@
   color-scheme: inherit;
 }
 
-.settingsField input:focus,
-.settingsField select:focus {
+.settingsField input:focus {
   outline: none;
   border-color: var(--accent);
+}
+
+.settingsField input::placeholder {
+  color: var(--text-muted);
 }
 
 .settingsHint {

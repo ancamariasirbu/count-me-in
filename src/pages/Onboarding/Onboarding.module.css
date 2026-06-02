@@ -185,8 +185,7 @@
   color: var(--text-muted);
 }
 
-.input,
-.select {
+.input {
   padding: 10px 14px;
   border: 1px solid var(--border);
   border-radius: 10px;
@@ -201,29 +200,13 @@
   color-scheme: inherit;
 }
 
-.selectWrap {
-  position: relative;
-}
-
-.selectWrap::after {
-  content: '›';
-  position: absolute;
-  right: 13px;
-  top: 50%;
-  transform: translateY(-50%) rotate(90deg);
-  color: var(--text-muted);
-  font-size: 16px;
-  pointer-events: none;
-}
-
-.input:focus,
-.select:focus {
+.input:focus {
   outline: none;
   border-color: var(--accent);
 }
 
 .input::placeholder {
-  color: var(--accent-light);
+  color: var(--text-muted);
 }
 
 /* ── Stitch pattern pills ── */

@@ -1,0 +1,120 @@
+.wrap {
+  position: relative;
+  width: 100%;
+}
+
+.trigger {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  font-weight: normal;
+  text-align: left;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  transition: border-color 0.2s;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.trigger:focus,
+.trigger:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.trigger.compact {
+  padding: 8px 10px;
+  border-radius: 8px;
+}
+
+.value {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.placeholder {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--accent-light);
+}
+
+.chevron {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1;
+  transform: rotate(90deg);
+  transition: transform 0.2s;
+}
+
+.chevronOpen {
+  transform: rotate(-90deg);
+}
+
+.panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  max-height: 240px;
+  overflow-y: auto;
+  z-index: 10;
+  outline: none;
+}
+
+.panel.compact {
+  border-radius: 8px;
+}
+
+.option {
+  padding: 8px 10px;
+  border-radius: 6px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'Inter', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.option.active {
+  background: var(--accent-faint);
+}
+
+.option.selected {
+  background: var(--accent-light);
+  color: var(--text);
+  font-weight: 500;
+}
+
+.option.selected.active {
+  background: var(--accent-light);
+}
+
+:global([data-theme="cottonCandy"]) .placeholder {
+  color: var(--text-muted);
+}
+
+:global([data-theme="indigo"]) .placeholder {
+  color: rgba(168, 112, 24, 0.55);
+}
