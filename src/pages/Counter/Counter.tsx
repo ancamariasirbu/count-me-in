@@ -506,6 +506,7 @@ function Counter() {
 
       <main className={styles.main}>
         <div className={styles.circleWrap}>
+          <div className={styles.orbitRingInner} />
           <div className={styles.orbitRing} />
           <button
             className={`${styles.incrementBtn} ${isPressing ? styles.pressing : ''} ${isPaused ? styles.paused : ''}`}
