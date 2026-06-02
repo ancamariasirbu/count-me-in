@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import styles from './Onboarding.module.css'
 import { CustomSelect } from '../../components/CustomSelect/CustomSelect'
+import { ThemeSelector } from '../../components/ThemeSelector/ThemeSelector'
 import { garmentTypes } from '../../constants/garmentTypes'
 
 const stitchPatterns = [
@@ -95,7 +96,10 @@ function Onboarding() {
 
       <div className={styles.formPanel}>
         <div className={styles.formInner}>
-          <p className={styles.formHeading}>Your project</p>
+          <div className={styles.formHeaderRow}>
+            <p className={styles.formHeading}>Your project</p>
+            <ThemeSelector direction="down" />
+          </div>
 
           <form onSubmit={handleSubmit} className={styles.form}>
             <div className={styles.row2}>

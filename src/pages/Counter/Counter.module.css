@@ -564,46 +564,6 @@
   text-align: center;
 }
 
-/* ── Theme dropdown ── */
-
-.themeWrap {
-  position: relative;
-}
-
-.themeDropdown {
-  position: absolute;
-  bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  box-shadow: var(--shadow);
-  overflow: hidden;
-  white-space: nowrap;
-  z-index: 20;
-}
-
-.themeOption {
-  display: block;
-  width: 100%;
-  padding: 8px 16px;
-  background: none;
-  border: none;
-  text-align: left;
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.06em;
-  color: var(--text-muted);
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-
-.themeOption:hover {
-  background: var(--accent-faint);
-  color: var(--accent);
-}
-
 /* ── Modals & overlays ── */
 
 .overlay {

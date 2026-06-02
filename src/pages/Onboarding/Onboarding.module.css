@@ -149,6 +149,13 @@
   max-width: 400px;
 }
 
+.formHeaderRow {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
 .formHeading {
   font-family: var(--mono);
   font-size: 10px;
@@ -156,7 +163,6 @@
   letter-spacing: 0.18em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin-bottom: 32px;
 }
 
 .form {
