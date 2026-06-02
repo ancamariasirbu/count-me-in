@@ -390,6 +390,8 @@ function Counter() {
   // Refs so the keyboard handler always calls the latest versions of these functions
   const incrementRef = useRef(increment)
   const handlePauseRef = useRef(handlePause)
+  const handleStartRef = useRef(handleStart)
+  const hasStartedRef = useRef(hasStarted)
   const lastSpacePressRef = useRef<number>(0)
   const pendingIncrementRef = useRef<boolean>(false)
   const keyupTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
@@ -397,6 +399,8 @@ function Counter() {
   useEffect(() => {
     incrementRef.current = increment
     handlePauseRef.current = handlePause
+    handleStartRef.current = handleStart
+    hasStartedRef.current = hasStarted
   })
 
   useEffect(() => {
@@ -404,6 +408,12 @@ function Counter() {
       const tag = (e.target as HTMLElement).tagName
       if (e.code === 'Space' && !e.repeat && tag !== 'INPUT' && tag !== 'TEXTAREA' && tag !== 'SELECT') {
         e.preventDefault()
+        if (!hasStartedRef.current) {
+          // Pre-start: simple flow — hold to stage, release to start. No double-tap pause path.
+          pendingIncrementRef.current = true
+          setIsPressing(true)
+          return
+        }
         const now = Date.now()
         if (now - lastSpacePressRef.current < 300) {
           // Double-tap: cancel any pending increment and pause/resume instead
@@ -437,7 +447,11 @@ function Counter() {
           keyupTimerRef.current = setTimeout(() => {
             if (pendingIncrementRef.current) {
               pendingIncrementRef.current = false
-              incrementRef.current()
+              if (hasStartedRef.current) {
+                incrementRef.current()
+              } else {
+                handleStartRef.current()
+              }
             }
             keyupTimerRef.current = null
           }, 100)
