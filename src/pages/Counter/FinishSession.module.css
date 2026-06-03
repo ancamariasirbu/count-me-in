@@ -23,58 +23,6 @@
   cursor: default;
 }
 
-.statsModal {
-  max-width: 420px;
-  width: 100%;
-}
-
-.statsTitle {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.statsList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.statRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 6px;
-}
-
-.statRow:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.statLabel {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
-.statValue {
-  font-family: var(--serif);
-  font-size: 15px;
-  color: var(--text);
-  text-align: right;
-  word-break: break-word;
-}
-
 .primaryBtn {
   flex: 1;
   padding: 13px;
@@ -92,4 +40,27 @@
 
 .primaryBtn:hover {
   opacity: 0.88;
+}
+
+/* Off-screen host for the downloadable card: laid out at full size so
+   html-to-image can capture it, but never visible to the user. */
+.exportHost {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  pointer-events: none;
+}
+
+/* Stats modal that frames the scaled card preview + actions. */
+.previewModal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  width: min(92vw, 460px);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px;
 }

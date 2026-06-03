@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigationType } from 'react-router-dom'
 import styles from './Counter.module.css'
 import { formatLastRow, formatAvg, formatGapDuration } from '../../utils/formatters'
