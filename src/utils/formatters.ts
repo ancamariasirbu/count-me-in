@@ -30,3 +30,30 @@ export function formatGapDuration(ms: number): string {
   if (minutes === 0) return hourPart
   return `${hourPart} ${minutes} minute${minutes === 1 ? '' : 's'}`
 }
+
+export function formatTotalDuration(ms: number): string {
+  const totalSeconds = Math.round(ms / 1000)
+  if (totalSeconds < 60) return `${totalSeconds}s`
+  const totalMinutes = Math.floor(totalSeconds / 60)
+  if (totalMinutes < 60) {
+    const remSeconds = totalSeconds % 60
+    return remSeconds === 0 ? `${totalMinutes}min` : `${totalMinutes}min ${remSeconds}s`
+  }
+  const hours = Math.floor(totalMinutes / 60)
+  const remMinutes = totalMinutes % 60
+  return remMinutes === 0 ? `${hours}h` : `${hours}h ${remMinutes}min`
+}
+
+export function formatSessionDateRange(startMs: number, endMs: number): string {
+  const start = new Date(startMs)
+  const end = new Date(endMs)
+  const opts: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' }
+  const startStr = start.toLocaleDateString('en-US', opts)
+  const sameDay =
+    start.getFullYear() === end.getFullYear() &&
+    start.getMonth() === end.getMonth() &&
+    start.getDate() === end.getDate()
+  if (sameDay) return startStr
+  const endStr = end.toLocaleDateString('en-US', opts)
+  return `${startStr} - ${endStr}`
+}

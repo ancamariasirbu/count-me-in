@@ -5,6 +5,7 @@ import { formatLastRow, formatAvg, formatGapDuration } from '../../utils/formatt
 import { CustomSelect } from '../../components/CustomSelect/CustomSelect'
 import { ThemeSelector } from '../../components/ThemeSelector/ThemeSelector'
 import { garmentTypes } from '../../constants/garmentTypes'
+import { FinishSession } from './FinishSession'
 
 const stitchPatterns = [
   'Stockinette',
@@ -119,6 +120,7 @@ function Counter() {
   const [showSettings, setShowSettings] = useState(false)
   const [focusRingsEnabled, setFocusRingsEnabled] = useState(false)
   const [pauseFlash, setPauseFlash] = useState(false)
+  const [sessionStartTimestamp, setSessionStartTimestamp] = useState<number | null>(null)
   const [settingsForm, setSettingsForm] = useState<SettingsForm>({
     projectName: restored?.sessionDetails.projectName ?? projectName ?? '',
     sessionNumber: restored?.sessionDetails.sessionNumber ?? sessionNumber ?? '',
@@ -159,6 +161,21 @@ function Counter() {
   function handleStart() {
     setHasStarted(true)
     setClockTimestamp(Date.now())
+    setSessionStartTimestamp(prev => prev ?? Date.now())
+  }
+
+  function resetSessionData() {
+    setHasStarted(false)
+    setRowCount(0)
+    setRowTimestampsMs([])
+    setStoredTotalKnittingTime(0)
+    setClockTimestamp(null)
+    setIsPaused(false)
+    setShowAnomalyAlert(false)
+    setSelectedAnomalyOption(null)
+    setConsecutiveSlowRows(0)
+    setStartingRow(0)
+    setSessionStartTimestamp(null)
   }
 
   function resetAverage() {
@@ -247,17 +264,8 @@ function Counter() {
   }
 
   function confirmReset() {
-    setHasStarted(false)
-    setRowCount(0)
-    setRowTimestampsMs([])
-    setStoredTotalKnittingTime(0)
-    setClockTimestamp(null)
-    setIsPaused(false)
+    resetSessionData()
     setShowResetConfirm(false)
-    setShowAnomalyAlert(false)
-    setSelectedAnomalyOption(null)
-    setConsecutiveSlowRows(0)
-    setStartingRow(0)
     setGapPrompt(null)
   }
 
@@ -530,6 +538,21 @@ function Counter() {
             <span className={styles.pauseTooltip}>resets count &amp; timing</span>
           </button>
         </div>
+        <FinishSession
+          projectName={settingsForm.projectName}
+          sessionNumber={settingsForm.sessionNumber}
+          garmentType={settingsForm.garmentType}
+          size={settingsForm.size}
+          stitchPattern={settingsForm.stitchPattern}
+          rowCount={startingRow + rowCount}
+          totalKnittingTime={totalKnittingTime}
+          averageTimePerRow={averageTimePerRow}
+          sessionStartTimestamp={sessionStartTimestamp}
+          disabled={!hasStarted}
+          isPaused={isPaused}
+          onPauseToggle={handlePause}
+          onReset={resetSessionData}
+        />
         <div className={styles.bottomBar}>
           <button
             className={styles.iconBtn}
