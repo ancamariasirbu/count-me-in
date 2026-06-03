@@ -49,7 +49,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  color: var(--accent-light);
+  /* Muted accent so the "select..." prompt reads as a hint, not a chosen value.
+     Derived from each theme's own accent at reduced opacity (the soft look
+     Midnight/Indigo Dusk already had), so every theme matches. */
+  color: color-mix(in srgb, var(--accent) 35%, transparent);
 }
 
 .chevron {
@@ -111,10 +114,8 @@
   background: var(--accent-light);
 }
 
-:global([data-theme="cottonCandy"]) .placeholder {
-  color: var(--text-muted);
-}
-
+/* Indigo Dusk keeps a warm amber prompt instead of its purple accent. */
 :global([data-theme="indigo"]) .placeholder {
   color: rgba(168, 112, 24, 0.55);
 }
+

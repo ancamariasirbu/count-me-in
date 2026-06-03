@@ -212,7 +212,7 @@
 }
 
 .input::placeholder {
-  color: var(--text-muted);
+  color: var(--text-faint);
 }
 
 /* ── Gauge (stitches × rows) ── */
