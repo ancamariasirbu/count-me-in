@@ -328,6 +328,22 @@ function Counter() {
     setShowSettings(false)
   }
 
+  function handleSettingsStitchPatternChange(pattern: string, checked: boolean) {
+    setSettingsForm(f => {
+      if (checked) {
+        // "Not sure" is a placeholder for "no answer yet", so it's mutually
+        // exclusive with the real patterns in both directions.
+        if (pattern === 'Not sure') {
+          return { ...f, stitchPattern: ['Not sure'] }
+        }
+        return { ...f, stitchPattern: [...f.stitchPattern.filter(p => p !== 'Not sure'), pattern] }
+      }
+      // Unchecking the last selection falls back to the "Not sure" default.
+      const next = f.stitchPattern.filter(p => p !== pattern)
+      return { ...f, stitchPattern: next.length === 0 ? ['Not sure'] : next }
+    })
+  }
+
   // Detection has two paths so we get accurate gap durations regardless of
   // why the JS was inactive:
   //   1. visibilitychange — fires immediately when the tab is hidden/shown,
@@ -893,13 +909,7 @@ function Counter() {
                         type="checkbox"
                         value={pattern}
                         checked={settingsForm.stitchPattern.includes(pattern)}
-                        onChange={e => {
-                          if (e.target.checked) {
-                            setSettingsForm(f => ({ ...f, stitchPattern: [...f.stitchPattern, pattern] }))
-                          } else {
-                            setSettingsForm(f => ({ ...f, stitchPattern: f.stitchPattern.filter(p => p !== pattern) }))
-                          }
-                        }}
+                        onChange={e => handleSettingsStitchPatternChange(pattern, e.target.checked)}
                       />
                       {pattern}
                     </label>

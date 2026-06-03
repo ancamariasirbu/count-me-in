@@ -52,11 +52,19 @@ function Onboarding() {
 
   function handleStitchPatternChange(e: React.ChangeEvent<HTMLInputElement>) {
     const { value, checked } = e.target
-    if (checked) {
-      setForm({ ...form, stitchPattern: [...form.stitchPattern, value] })
-    } else {
-      setForm({ ...form, stitchPattern: form.stitchPattern.filter(p => p !== value) })
-    }
+    setForm(prev => {
+      if (checked) {
+        // "Not sure" is a placeholder for "no answer yet", so it's mutually
+        // exclusive with the real patterns in both directions.
+        if (value === 'Not sure') {
+          return { ...prev, stitchPattern: ['Not sure'] }
+        }
+        return { ...prev, stitchPattern: [...prev.stitchPattern.filter(p => p !== 'Not sure'), value] }
+      }
+      // Unchecking the last selection falls back to the "Not sure" default.
+      const next = prev.stitchPattern.filter(p => p !== value)
+      return { ...prev, stitchPattern: next.length === 0 ? ['Not sure'] : next }
+    })
   }
 
   function handleSubmit(e: React.SyntheticEvent) {

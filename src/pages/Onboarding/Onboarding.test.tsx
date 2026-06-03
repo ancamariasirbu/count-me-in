@@ -108,6 +108,38 @@ describe('empty form submission', () => {
   })
 })
 
+describe('stitch pattern selection', () => {
+  it('starts with only "Not sure" checked', () => {
+    renderOnboarding()
+    expect((screen.getByLabelText('Not sure') as HTMLInputElement).checked).toBe(true)
+    expect((screen.getByLabelText('Stockinette') as HTMLInputElement).checked).toBe(false)
+  })
+
+  it('deselects "Not sure" when a real pattern is picked', () => {
+    renderOnboarding()
+    fireEvent.click(screen.getByLabelText('Stockinette'))
+    expect((screen.getByLabelText('Stockinette') as HTMLInputElement).checked).toBe(true)
+    expect((screen.getByLabelText('Not sure') as HTMLInputElement).checked).toBe(false)
+  })
+
+  it('clears real patterns when "Not sure" is picked again', () => {
+    renderOnboarding()
+    fireEvent.click(screen.getByLabelText('Stockinette'))
+    fireEvent.click(screen.getByLabelText('Ribbing'))
+    fireEvent.click(screen.getByLabelText('Not sure'))
+    expect((screen.getByLabelText('Not sure') as HTMLInputElement).checked).toBe(true)
+    expect((screen.getByLabelText('Stockinette') as HTMLInputElement).checked).toBe(false)
+    expect((screen.getByLabelText('Ribbing') as HTMLInputElement).checked).toBe(false)
+  })
+
+  it('falls back to "Not sure" when the last pattern is unchecked', () => {
+    renderOnboarding()
+    fireEvent.click(screen.getByLabelText('Stockinette'))
+    fireEvent.click(screen.getByLabelText('Stockinette'))
+    expect((screen.getByLabelText('Not sure') as HTMLInputElement).checked).toBe(true)
+  })
+})
+
 describe('filled form submission', () => {
   it('navigates to /counter with the filled form data', () => {
     renderOnboarding()
