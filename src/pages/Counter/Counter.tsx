@@ -789,50 +789,54 @@ function Counter() {
             <div className={styles.settingsSection}>
               <span className={styles.settingsSectionTitle}>Session details</span>
 
-              <div className={styles.settingsField}>
-                <label htmlFor="settings-projectName">Project name</label>
-                <input
-                  id="settings-projectName"
-                  type="text"
-                  placeholder="Moby Sweater"
-                  value={settingsForm.projectName}
-                  onChange={e => setSettingsForm(f => ({ ...f, projectName: e.target.value }))}
-                />
+              <div className={styles.settingsRow2}>
+                <div className={styles.settingsField}>
+                  <label htmlFor="settings-projectName">Project name</label>
+                  <input
+                    id="settings-projectName"
+                    type="text"
+                    placeholder="Moby Sweater"
+                    value={settingsForm.projectName}
+                    onChange={e => setSettingsForm(f => ({ ...f, projectName: e.target.value }))}
+                  />
+                </div>
+
+                <div className={styles.settingsField}>
+                  <label htmlFor="settings-sessionNumber">Session number</label>
+                  <input
+                    id="settings-sessionNumber"
+                    type="number"
+                    placeholder="3"
+                    min="1"
+                    value={settingsForm.sessionNumber}
+                    onChange={e => setSettingsForm(f => ({ ...f, sessionNumber: e.target.value }))}
+                  />
+                </div>
               </div>
 
-              <div className={styles.settingsField}>
-                <label htmlFor="settings-sessionNumber">Session number</label>
-                <input
-                  id="settings-sessionNumber"
-                  type="number"
-                  placeholder="3"
-                  min="1"
-                  value={settingsForm.sessionNumber}
-                  onChange={e => setSettingsForm(f => ({ ...f, sessionNumber: e.target.value }))}
-                />
-              </div>
+              <div className={styles.settingsRow2}>
+                <div className={styles.settingsField}>
+                  <label htmlFor="settings-garmentType">Project type</label>
+                  <CustomSelect
+                    id="settings-garmentType"
+                    value={settingsForm.garmentType}
+                    onChange={v => setSettingsForm(f => ({ ...f, garmentType: v }))}
+                    options={garmentTypes.map(t => ({ value: t, label: t }))}
+                    placeholder="select..."
+                    size="compact"
+                  />
+                </div>
 
-              <div className={styles.settingsField}>
-                <label htmlFor="settings-garmentType">Project type</label>
-                <CustomSelect
-                  id="settings-garmentType"
-                  value={settingsForm.garmentType}
-                  onChange={v => setSettingsForm(f => ({ ...f, garmentType: v }))}
-                  options={garmentTypes.map(t => ({ value: t, label: t }))}
-                  placeholder="select..."
-                  size="compact"
-                />
-              </div>
-
-              <div className={styles.settingsField}>
-                <label htmlFor="settings-size">Size</label>
-                <input
-                  id="settings-size"
-                  type="text"
-                  placeholder="M"
-                  value={settingsForm.size}
-                  onChange={e => setSettingsForm(f => ({ ...f, size: e.target.value }))}
-                />
+                <div className={styles.settingsField}>
+                  <label htmlFor="settings-size">Size</label>
+                  <input
+                    id="settings-size"
+                    type="text"
+                    placeholder="M"
+                    value={settingsForm.size}
+                    onChange={e => setSettingsForm(f => ({ ...f, size: e.target.value }))}
+                  />
+                </div>
               </div>
 
               <div className={styles.settingsField}>
