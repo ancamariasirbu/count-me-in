@@ -1,7 +1,7 @@
 .page {
   min-height: 100dvh;
   display: grid;
-  grid-template-columns: 4fr 5fr;
+  grid-template-columns: 4fr 5.5fr;
   background-color: var(--bg);
   background-image:
     radial-gradient(circle, var(--dot-a) 1.5px, transparent 1.5px),
@@ -63,7 +63,7 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  gap: 160px;
+  gap: 220px;
 }
 
 .wordmark {
