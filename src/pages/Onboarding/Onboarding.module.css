@@ -215,6 +215,30 @@
   color: var(--text-muted);
 }
 
+/* ── Gauge (stitches × rows) ── */
+
+.gaugeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gaugeInput {
+  width: 3.5em;
+  flex: none;
+  text-align: center;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.gaugeUnit {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
 /* ── Stitch pattern pills ── */
 
 .pills {

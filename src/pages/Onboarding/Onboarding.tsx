@@ -20,6 +20,9 @@ const defaultValues = {
   sessionNumber: '',
   garmentType: '',
   size: '',
+  needleSize: '',
+  gaugeStitches: '',
+  gaugeRows: '',
   stitchPattern: ['Not sure'],
   anomalyAlertsEnabled: true,
 }
@@ -30,6 +33,9 @@ function isFormEmpty(form: typeof defaultValues) {
     form.sessionNumber === '' &&
     form.garmentType === '' &&
     form.size === '' &&
+    form.needleSize === '' &&
+    form.gaugeStitches === '' &&
+    form.gaugeRows === '' &&
     form.stitchPattern.length === 1 &&
     form.stitchPattern[0] === 'Not sure'
   )
@@ -153,6 +159,46 @@ function Onboarding() {
                   value={form.size}
                   onChange={handleChange}
                 />
+              </div>
+            </div>
+
+            <div className={styles.row2}>
+              <div className={styles.field}>
+                <label htmlFor="needleSize" className={styles.label}>Needle size</label>
+                <input
+                  className={styles.input}
+                  id="needleSize"
+                  name="needleSize"
+                  type="text"
+                  placeholder="4 mm"
+                  value={form.needleSize}
+                  onChange={handleChange}
+                />
+              </div>
+              <div className={styles.field}>
+                <label className={styles.label}>Gauge</label>
+                <div className={styles.gaugeRow}>
+                  <input
+                    className={`${styles.input} ${styles.gaugeInput}`}
+                    name="gaugeStitches"
+                    type="number"
+                    min="0"
+                    aria-label="gauge stitches"
+                    value={form.gaugeStitches}
+                    onChange={handleChange}
+                  />
+                  <span className={styles.gaugeUnit}>stitches</span>
+                  <input
+                    className={`${styles.input} ${styles.gaugeInput}`}
+                    name="gaugeRows"
+                    type="number"
+                    min="0"
+                    aria-label="gauge rows"
+                    value={form.gaugeRows}
+                    onChange={handleChange}
+                  />
+                  <span className={styles.gaugeUnit}>rows</span>
+                </div>
               </div>
             </div>
 

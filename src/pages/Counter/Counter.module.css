@@ -804,6 +804,25 @@
   opacity: 0.7;
 }
 
+.gaugeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.gaugeInput {
+  width: 3.5em;
+  flex: none;
+  text-align: center;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.gaugeUnit {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
 .settingsCheckboxGroup {
   display: flex;
   flex-wrap: wrap;

@@ -22,6 +22,9 @@ interface OnboardingState {
   sessionNumber: string
   garmentType: string
   size: string
+  needleSize: string
+  gaugeStitches: string
+  gaugeRows: string
   stitchPattern: string[]
   anomalyAlertsEnabled: boolean
 }
@@ -31,6 +34,9 @@ interface SettingsForm {
   sessionNumber: string
   garmentType: string
   size: string
+  needleSize: string
+  gaugeStitches: string
+  gaugeRows: string
   stitchPattern: string[]
   anomalyAlertsEnabled: boolean
   startingRow: string
@@ -42,6 +48,9 @@ interface PersistedSession {
     sessionNumber: string
     garmentType: string
     size: string
+    needleSize: string
+    gaugeStitches: string
+    gaugeRows: string
     stitchPattern: string[]
   }
   hasStarted: boolean
@@ -81,7 +90,7 @@ function saveSession(session: PersistedSession) {
 function Counter() {
   const { state } = useLocation()
   const navigationType = useNavigationType()
-  const { projectName, sessionNumber, garmentType, size, stitchPattern, anomalyAlertsEnabled } = (state as OnboardingState) ?? {}
+  const { projectName, sessionNumber, garmentType, size, needleSize, gaugeStitches, gaugeRows, stitchPattern, anomalyAlertsEnabled } = (state as OnboardingState) ?? {}
 
   // A PUSH/REPLACE carrying state means the user just came through onboarding
   // ("Let's knit", "Skip", or "Continue") — start fresh. A POP (reload,
@@ -96,6 +105,9 @@ function Counter() {
       sessionNumber: sessionNumber || '',
       garmentType: garmentType || '',
       size: size || '',
+      needleSize: needleSize || '',
+      gaugeStitches: gaugeStitches || '',
+      gaugeRows: gaugeRows || '',
       stitchPattern: stitchPattern || ['Not sure'],
     }
   )
@@ -126,6 +138,9 @@ function Counter() {
     sessionNumber: restored?.sessionDetails.sessionNumber ?? sessionNumber ?? '',
     garmentType: restored?.sessionDetails.garmentType ?? garmentType ?? '',
     size: restored?.sessionDetails.size ?? size ?? '',
+    needleSize: restored?.sessionDetails.needleSize ?? needleSize ?? '',
+    gaugeStitches: restored?.sessionDetails.gaugeStitches ?? gaugeStitches ?? '',
+    gaugeRows: restored?.sessionDetails.gaugeRows ?? gaugeRows ?? '',
     stitchPattern: restored?.sessionDetails.stitchPattern ?? stitchPattern ?? ['Not sure'],
     anomalyAlertsEnabled: restored ? !restored.anomalyAlertDisabled : (anomalyAlertsEnabled ?? true),
     startingRow: String(restored?.startingRow ?? 0),
@@ -287,6 +302,9 @@ function Counter() {
       sessionNumber: sessionDetails.sessionNumber,
       garmentType: sessionDetails.garmentType,
       size: sessionDetails.size,
+      needleSize: sessionDetails.needleSize,
+      gaugeStitches: sessionDetails.gaugeStitches,
+      gaugeRows: sessionDetails.gaugeRows,
       stitchPattern: [...sessionDetails.stitchPattern],
       anomalyAlertsEnabled: !anomalyAlertDisabled,
       startingRow: String(startingRow),
@@ -300,6 +318,9 @@ function Counter() {
       sessionNumber: settingsForm.sessionNumber,
       garmentType: settingsForm.garmentType,
       size: settingsForm.size,
+      needleSize: settingsForm.needleSize,
+      gaugeStitches: settingsForm.gaugeStitches,
+      gaugeRows: settingsForm.gaugeRows,
       stitchPattern: settingsForm.stitchPattern,
     })
     setStartingRow(Math.max(0, parseInt(settingsForm.startingRow) || 0))
@@ -543,6 +564,9 @@ function Counter() {
           sessionNumber={settingsForm.sessionNumber}
           garmentType={settingsForm.garmentType}
           size={settingsForm.size}
+          needleSize={settingsForm.needleSize}
+          gaugeStitches={settingsForm.gaugeStitches}
+          gaugeRows={settingsForm.gaugeRows}
           stitchPattern={settingsForm.stitchPattern}
           rowCount={startingRow + rowCount}
           totalKnittingTime={totalKnittingTime}
@@ -809,6 +833,41 @@ function Counter() {
                   value={settingsForm.size}
                   onChange={e => setSettingsForm(f => ({ ...f, size: e.target.value }))}
                 />
+              </div>
+
+              <div className={styles.settingsField}>
+                <label htmlFor="settings-needleSize">Needle size</label>
+                <input
+                  id="settings-needleSize"
+                  type="text"
+                  placeholder="4 mm"
+                  value={settingsForm.needleSize}
+                  onChange={e => setSettingsForm(f => ({ ...f, needleSize: e.target.value }))}
+                />
+              </div>
+
+              <div className={styles.settingsField}>
+                <label>Gauge</label>
+                <div className={styles.gaugeRow}>
+                  <input
+                    className={styles.gaugeInput}
+                    type="number"
+                    min="0"
+                    aria-label="gauge stitches"
+                    value={settingsForm.gaugeStitches}
+                    onChange={e => setSettingsForm(f => ({ ...f, gaugeStitches: e.target.value }))}
+                  />
+                  <span className={styles.gaugeUnit}>stitches</span>
+                  <input
+                    className={styles.gaugeInput}
+                    type="number"
+                    min="0"
+                    aria-label="gauge rows"
+                    value={settingsForm.gaugeRows}
+                    onChange={e => setSettingsForm(f => ({ ...f, gaugeRows: e.target.value }))}
+                  />
+                  <span className={styles.gaugeUnit}>rows</span>
+                </div>
               </div>
 
               <div className={styles.settingsToggleRow}>

@@ -8,6 +8,9 @@ export type FinishSessionProps = {
   sessionNumber: string
   garmentType: string
   size: string
+  needleSize: string
+  gaugeStitches: string
+  gaugeRows: string
   stitchPattern: string[]
   rowCount: number
   totalKnittingTime: number
@@ -24,6 +27,9 @@ export function FinishSession({
   sessionNumber,
   garmentType,
   size,
+  needleSize,
+  gaugeStitches,
+  gaugeRows,
   stitchPattern,
   rowCount,
   totalKnittingTime,
@@ -70,6 +76,13 @@ export function FinishSession({
     onReset()
   }
 
+  const gaugeLabel = [
+    gaugeStitches && `${gaugeStitches} sts`,
+    gaugeRows && `${gaugeRows} rows`,
+  ]
+    .filter(Boolean)
+    .join(' × ')
+
   const dateLabel =
     sessionStartTimestamp !== null && finishTimestamp !== null
       ? formatSessionDateRange(sessionStartTimestamp, finishTimestamp)
@@ -113,6 +126,18 @@ export function FinishSession({
                 <div className={styles.statRow}>
                   <span className={styles.statLabel}>Size</span>
                   <span className={styles.statValue}>{size}</span>
+                </div>
+              )}
+              {needleSize && (
+                <div className={styles.statRow}>
+                  <span className={styles.statLabel}>Needle size</span>
+                  <span className={styles.statValue}>{needleSize}</span>
+                </div>
+              )}
+              {gaugeLabel && (
+                <div className={styles.statRow}>
+                  <span className={styles.statLabel}>Gauge</span>
+                  <span className={styles.statValue}>{gaugeLabel}</span>
                 </div>
               )}
               {stitchPattern.length > 0 && (
