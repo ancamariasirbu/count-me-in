@@ -5,10 +5,8 @@
   border-radius: 14px;
   background: var(--accent-faint);
   color: var(--accent);
-  font-family: var(--serif);
   font-size: 14px;
   font-weight: 500;
-  font-style: italic;
   cursor: pointer;
   transition: border-color 0.3s, color 0.3s, background 0.3s, opacity 0.2s;
   margin-top: 8px;
@@ -23,58 +21,13 @@
   cursor: default;
 }
 
-.statsModal {
-  max-width: 420px;
-  width: 100%;
+/* Cotton Candy's --border is blue; give the finish button the same pink border
+   as the Pause button so it matches its pink text/background. */
+:global([data-theme="cottonCandy"]) .finishBtn {
+  border-color: var(--pause-border);
 }
 
-.statsTitle {
-  font-family: var(--mono);
-  font-size: 11px;
-  font-weight: 500;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  margin-bottom: 4px;
-}
-
-.statsList {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.statRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 16px;
-  border-bottom: 1px solid var(--border);
-  padding-bottom: 6px;
-}
-
-.statRow:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-
-.statLabel {
-  font-family: var(--mono);
-  font-size: 10px;
-  letter-spacing: 0.10em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-  flex-shrink: 0;
-}
-
-.statValue {
-  font-family: var(--serif);
-  font-size: 15px;
-  color: var(--text);
-  text-align: right;
-  word-break: break-word;
-}
-
+/* Stats modal actions: Back and Confirm share the width equally. */
 .primaryBtn {
   flex: 1;
   padding: 13px;
@@ -82,14 +35,36 @@
   border-radius: 14px;
   background: var(--accent);
   color: #fff;
-  font-family: var(--serif);
   font-size: 14px;
   font-weight: 500;
-  font-style: italic;
   cursor: pointer;
   transition: opacity 0.2s;
 }
 
 .primaryBtn:hover {
   opacity: 0.88;
+}
+
+/* Off-screen full-size instance of the card, pinned to the export width so
+   its cqw units render at 1080px. Captured for the PNG; never visible. */
+.exportHost {
+  position: fixed;
+  left: -99999px;
+  top: 0;
+  width: 1080px;
+  pointer-events: none;
+}
+
+/* Stats modal that frames the responsive card preview + actions. */
+.previewModal {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 16px;
+  width: min(92vw, 460px);
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin: 24px;
 }

@@ -468,11 +468,9 @@
 }
 
 .resetGlobalBtn {
-  position: relative;
-}
-
-.resetGlobalBtn:hover:not(:disabled) .pauseTooltip {
-  opacity: 1;
+  /* Non-italic sans text instead of the shared italic serif. */
+  font-family: var(--sans);
+  font-style: normal;
 }
 
 .pauseBtn {

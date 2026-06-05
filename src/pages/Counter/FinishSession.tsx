@@ -1,7 +1,9 @@
 import { useRef, useState } from 'react'
 import counterStyles from './Counter.module.css'
 import styles from './FinishSession.module.css'
-import { formatAvg, formatTotalDuration, formatSessionDateRange } from '../../utils/formatters'
+import { formatSessionDateRange } from '../../utils/formatters'
+import { StatsCard } from './StatsCard'
+import { downloadStatsCard, statsCardFilename } from '../../utils/downloadStatsCard'
 
 export type FinishSessionProps = {
   projectName: string
@@ -44,6 +46,7 @@ export function FinishSession({
   const [showDownloadPrompt, setShowDownloadPrompt] = useState(false)
   const [finishTimestamp, setFinishTimestamp] = useState<number | null>(null)
   const wasPausedBeforeRef = useRef(false)
+  const cardRef = useRef<HTMLDivElement>(null)
 
   function openStats() {
     wasPausedBeforeRef.current = isPaused
@@ -66,9 +69,13 @@ export function FinishSession({
     setShowDownloadPrompt(false)
   }
 
-  function finish(withDownload: boolean) {
-    if (withDownload) {
-      // TODO: trigger PNG download (added in next phase)
+  async function finish(withDownload: boolean) {
+    if (withDownload && cardRef.current) {
+      try {
+        await downloadStatsCard(cardRef.current, statsCardFilename(projectName, sessionNumber))
+      } catch (err) {
+        console.error('Could not export the stats card', err)
+      }
     }
     setShowDownloadPrompt(false)
     setShowStats(false)
@@ -76,17 +83,27 @@ export function FinishSession({
     onReset()
   }
 
-  const gaugeLabel = [
-    gaugeStitches && `${gaugeStitches} sts`,
-    gaugeRows && `${gaugeRows} rows`,
-  ]
-    .filter(Boolean)
-    .join(' × ')
-
+  // Date always shows while the modal is open; if there's no recorded start,
+  // fall back to the finish timestamp so it reads as a single day.
   const dateLabel =
-    sessionStartTimestamp !== null && finishTimestamp !== null
-      ? formatSessionDateRange(sessionStartTimestamp, finishTimestamp)
+    finishTimestamp !== null
+      ? formatSessionDateRange(sessionStartTimestamp ?? finishTimestamp, finishTimestamp)
       : ''
+
+  const cardProps = {
+    projectName,
+    sessionNumber,
+    garmentType,
+    size,
+    needleSize,
+    gaugeStitches,
+    gaugeRows,
+    stitchPattern,
+    rowCount,
+    totalKnittingTime,
+    averageTimePerRow,
+    dateLabel,
+  }
 
   return (
     <>
@@ -100,73 +117,21 @@ export function FinishSession({
       </button>
 
       {showStats && (
-        <div className={counterStyles.overlay}>
-          <div className={`${counterStyles.modal} ${styles.statsModal}`}>
-            <p className={styles.statsTitle}>Session summary</p>
-            <div className={styles.statsList}>
-              {projectName && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Project</span>
-                  <span className={styles.statValue}>{projectName}</span>
-                </div>
-              )}
-              {sessionNumber && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Session</span>
-                  <span className={styles.statValue}>{sessionNumber}</span>
-                </div>
-              )}
-              {garmentType && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Project type</span>
-                  <span className={styles.statValue}>{garmentType}</span>
-                </div>
-              )}
-              {size && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Size</span>
-                  <span className={styles.statValue}>{size}</span>
-                </div>
-              )}
-              {needleSize && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Needle size</span>
-                  <span className={styles.statValue}>{needleSize}</span>
-                </div>
-              )}
-              {gaugeLabel && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Gauge</span>
-                  <span className={styles.statValue}>{gaugeLabel}</span>
-                </div>
-              )}
-              {stitchPattern.length > 0 && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Stitch pattern</span>
-                  <span className={styles.statValue}>{stitchPattern.join(', ')}</span>
-                </div>
-              )}
-              <div className={styles.statRow}>
-                <span className={styles.statLabel}>Total rows</span>
-                <span className={styles.statValue}>{rowCount}</span>
-              </div>
-              <div className={styles.statRow}>
-                <span className={styles.statLabel}>Total time</span>
-                <span className={styles.statValue}>{formatTotalDuration(totalKnittingTime)}</span>
-              </div>
-              {averageTimePerRow !== null && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Avg / row</span>
-                  <span className={styles.statValue}>{formatAvg(averageTimePerRow)}</span>
-                </div>
-              )}
-              {dateLabel && (
-                <div className={styles.statRow}>
-                  <span className={styles.statLabel}>Date</span>
-                  <span className={styles.statValue}>{dateLabel}</span>
-                </div>
-              )}
-            </div>
+        <div className={styles.exportHost} aria-hidden="true">
+          <StatsCard ref={cardRef} {...cardProps} />
+        </div>
+      )}
+
+      {showStats && (
+        <div
+          className={counterStyles.overlay}
+          onClick={e => {
+            // Clicking the backdrop (outside the card) acts as Back.
+            if (e.target === e.currentTarget) closeStats()
+          }}
+        >
+          <div className={styles.previewModal}>
+            <StatsCard {...cardProps} />
             <div className={counterStyles.modalActions}>
               <button className={counterStyles.secondaryBtn} onClick={closeStats}>
                 Back

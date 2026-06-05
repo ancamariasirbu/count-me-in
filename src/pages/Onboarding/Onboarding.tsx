@@ -102,7 +102,11 @@ function Onboarding() {
             </div>
             <div className={styles.statChip}>
               <span className={styles.dot} />
-              <span>session history</span>
+              <span>save your session summary</span>
+            </div>
+            <div className={styles.statChip}>
+              <span className={styles.dot} />
+              <span>six cozy themes</span>
             </div>
           </div>
         </div>

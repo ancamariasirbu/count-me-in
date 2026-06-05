@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigationType } from 'react-router-dom'
 import styles from './Counter.module.css'
 import { formatLastRow, formatAvg, formatGapDuration } from '../../utils/formatters'
@@ -84,6 +84,20 @@ function saveSession(session: PersistedSession) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session))
   } catch {
     // Ignore: private mode, quota, or storage disabled.
+  }
+}
+
+/** Empty project details, for a clean slate after a finish or a reset. */
+function blankProjectDetails(): PersistedSession['sessionDetails'] {
+  return {
+    projectName: '',
+    sessionNumber: '',
+    garmentType: '',
+    size: '',
+    needleSize: '',
+    gaugeStitches: '',
+    gaugeRows: '',
+    stitchPattern: ['Not sure'],
   }
 }
 
@@ -191,6 +205,9 @@ function Counter() {
     setConsecutiveSlowRows(0)
     setStartingRow(0)
     setSessionStartTimestamp(null)
+    // Clear the project details too, for a clean slate (finish or reset).
+    setSessionDetails(blankProjectDetails())
+    setSettingsForm(f => ({ ...f, ...blankProjectDetails(), startingRow: '0' }))
   }
 
   function resetAverage() {
@@ -572,7 +589,6 @@ function Counter() {
             disabled={!hasStarted}
           >
             Reset
-            <span className={styles.pauseTooltip}>resets count &amp; timing</span>
           </button>
         </div>
         <FinishSession

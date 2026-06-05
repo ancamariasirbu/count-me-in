@@ -1,0 +1,176 @@
+/* Downloadable session stats card — "gauge swatch" design.
+   Fully responsive: every dimension is a `cqw` (% of the card's own width),
+   so the card looks identical at any width and stays crisp.
+   Design width = 540px, so 1cqw = 5.4px and each value below is px ÷ 5.4.
+   Uses the app's global theme variables to match the active theme. */
+
+.container {
+  container-type: inline-size; /* `cqw` resolves against this element's width */
+  width: 100%;
+}
+
+.card {
+  width: 100%;
+  aspect-ratio: 540 / 675; /* 4:5 portrait */
+  position: relative;
+  overflow: hidden;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+}
+
+/* faint stitch-grid background */
+.net {
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(0deg, var(--accent-light) 0 0.185cqw, transparent 0.185cqw 5.556cqw),
+    repeating-linear-gradient(90deg, var(--accent-light) 0 0.185cqw, transparent 0.185cqw 5.556cqw);
+  opacity: 0.5;
+}
+.wash {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, transparent, var(--bg) 86%);
+}
+
+.inner {
+  position: relative;
+  height: 100%;
+  padding: 7.778cqw 7.407cqw 3.704cqw;
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  display: inline-block;
+  white-space: nowrap;
+  background: var(--surface);
+  border: 0.37cqw solid var(--accent);
+  padding: 1.296cqw 2.593cqw;
+  transform: rotate(-2deg);
+  font-size: 2.037cqw;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  box-shadow: 0.556cqw 0.556cqw 0 var(--accent-light);
+}
+
+.project {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 6.111cqw;
+  line-height: 1.08;
+  color: var(--text);
+  margin-top: 9.259cqw;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.sub {
+  font-size: 2.222cqw;
+  letter-spacing: 0.04em;
+  color: var(--text-muted);
+  margin-top: 1.481cqw;
+}
+
+.swatch {
+  align-self: center;
+  margin: 3.704cqw 0 0;
+  width: 44.444cqw;
+  background: var(--surface);
+  border: 0.463cqw solid var(--accent);
+  box-shadow: 1.111cqw 1.111cqw 0 var(--accent-light);
+  padding: 3.333cqw 1.852cqw 2.593cqw;
+  text-align: center;
+}
+.count {
+  font-family: var(--serif);
+  font-weight: 700;
+  font-size: 17.037cqw;
+  line-height: 0.85;
+  color: var(--accent);
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+}
+.clbl {
+  font-size: 2.037cqw;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin-top: 1.296cqw;
+}
+
+.legend {
+  margin-top: 8.519cqw;
+  display: flex;
+  flex-direction: column;
+  gap: 1.852cqw;
+}
+.leg {
+  display: flex;
+  align-items: center;
+  font-size: 2.593cqw;
+}
+.sym {
+  width: 3.333cqw;
+  height: 3.333cqw;
+  border: 0.278cqw solid var(--accent);
+  margin-right: 2.222cqw;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.symFill { background: var(--accent); }
+.symDot::after { content: ''; width: 1.111cqw; height: 1.111cqw; border-radius: 50%; background: var(--accent); }
+.symBar::after { content: ''; width: 0.37cqw; height: 2.037cqw; background: var(--accent); }
+.symGrid {
+  background-image:
+    repeating-linear-gradient(0deg, var(--accent) 0 0.185cqw, transparent 0.185cqw 0.926cqw),
+    repeating-linear-gradient(90deg, var(--accent) 0 0.185cqw, transparent 0.185cqw 0.926cqw);
+}
+.legK { color: var(--text-muted); }
+.legV { margin-left: auto; font-weight: 600; color: var(--text); }
+
+/* Footer (patterns + branding) pinned to the bottom of the card. */
+.footer {
+  margin-top: auto;
+  padding-top: 3.333cqw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2.222cqw;
+}
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.296cqw;
+}
+.chip {
+  font-size: 2.222cqw;
+  color: var(--text);
+  background: var(--surface);
+  border: 0.185cqw solid var(--accent);
+  padding: 0.741cqw 2.037cqw;
+}
+
+/* Branding: "Count Me In" flanked by the same · dot used in the slanted tag. */
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 1.852cqw;
+  font-size: 2.037cqw;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+}
+.brand::before,
+.brand::after {
+  content: '·';
+  font-size: 2.593cqw;
+  letter-spacing: 0;
+  color: var(--accent);
+}

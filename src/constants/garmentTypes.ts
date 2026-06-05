@@ -1,5 +1,6 @@
 export const garmentTypes = [
-  'Sweater / cardigan',
+  'Sweater',
+  'Cardigan',
   'Top',
   'Skirt',
   'Dress',
