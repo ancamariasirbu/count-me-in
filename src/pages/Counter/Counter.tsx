@@ -87,6 +87,20 @@ function saveSession(session: PersistedSession) {
   }
 }
 
+/** Empty project details, for a clean slate after a finish or a reset. */
+function blankProjectDetails(): PersistedSession['sessionDetails'] {
+  return {
+    projectName: '',
+    sessionNumber: '',
+    garmentType: '',
+    size: '',
+    needleSize: '',
+    gaugeStitches: '',
+    gaugeRows: '',
+    stitchPattern: ['Not sure'],
+  }
+}
+
 function Counter() {
   const { state } = useLocation()
   const navigationType = useNavigationType()
@@ -191,6 +205,9 @@ function Counter() {
     setConsecutiveSlowRows(0)
     setStartingRow(0)
     setSessionStartTimestamp(null)
+    // Clear the project details too, for a clean slate (finish or reset).
+    setSessionDetails(blankProjectDetails())
+    setSettingsForm(f => ({ ...f, ...blankProjectDetails(), startingRow: '0' }))
   }
 
   function resetAverage() {
@@ -572,7 +589,6 @@ function Counter() {
             disabled={!hasStarted}
           >
             Reset
-            <span className={styles.pauseTooltip}>resets count &amp; timing</span>
           </button>
         </div>
         <FinishSession

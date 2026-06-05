@@ -154,6 +154,19 @@ describe('reset', () => {
 
     expect(screen.getByText('Start')).toBeInTheDocument()
   })
+
+  it('clears the project details on reset', () => {
+    renderCounter({ projectName: 'Test Project', sessionNumber: '1' })
+
+    expect(screen.getByText('Test Project')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByText('Start'))
+    fireEvent.click(screen.getByText('Reset'))
+    fireEvent.click(screen.getAllByText('Reset')[1])
+
+    expect(screen.queryByText('Test Project')).not.toBeInTheDocument()
+    expect(screen.getByText('My Project')).toBeInTheDocument()
+  })
 })
 
 describe('anomaly alert', () => {
