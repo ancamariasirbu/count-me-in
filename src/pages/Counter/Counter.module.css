@@ -469,6 +469,9 @@
 
 .resetGlobalBtn {
   position: relative;
+  /* Trial: non-italic sans text instead of the shared italic serif. */
+  font-family: var(--sans);
+  font-style: normal;
 }
 
 .resetGlobalBtn:hover:not(:disabled) .pauseTooltip {

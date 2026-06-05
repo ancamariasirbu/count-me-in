@@ -2,7 +2,7 @@ import { useRef, useState } from 'react'
 import counterStyles from './Counter.module.css'
 import styles from './FinishSession.module.css'
 import { formatSessionDateRange } from '../../utils/formatters'
-import { StatsCard, StatsCardPreview } from './StatsCard'
+import { StatsCard } from './StatsCard'
 import { downloadStatsCard, statsCardFilename } from '../../utils/downloadStatsCard'
 
 export type FinishSessionProps = {
@@ -83,10 +83,27 @@ export function FinishSession({
     onReset()
   }
 
+  // Date always shows while the modal is open; if there's no recorded start,
+  // fall back to the finish timestamp so it reads as a single day.
   const dateLabel =
-    sessionStartTimestamp !== null && finishTimestamp !== null
-      ? formatSessionDateRange(sessionStartTimestamp, finishTimestamp)
+    finishTimestamp !== null
+      ? formatSessionDateRange(sessionStartTimestamp ?? finishTimestamp, finishTimestamp)
       : ''
+
+  const cardProps = {
+    projectName,
+    sessionNumber,
+    garmentType,
+    size,
+    needleSize,
+    gaugeStitches,
+    gaugeRows,
+    stitchPattern,
+    rowCount,
+    totalKnittingTime,
+    averageTimePerRow,
+    dateLabel,
+  }
 
   return (
     <>
@@ -101,41 +118,20 @@ export function FinishSession({
 
       {showStats && (
         <div className={styles.exportHost} aria-hidden="true">
-          <StatsCard
-            ref={cardRef}
-            projectName={projectName}
-            sessionNumber={sessionNumber}
-            garmentType={garmentType}
-            size={size}
-            needleSize={needleSize}
-            gaugeStitches={gaugeStitches}
-            gaugeRows={gaugeRows}
-            stitchPattern={stitchPattern}
-            rowCount={rowCount}
-            totalKnittingTime={totalKnittingTime}
-            averageTimePerRow={averageTimePerRow}
-            dateLabel={dateLabel}
-          />
+          <StatsCard ref={cardRef} {...cardProps} />
         </div>
       )}
 
       {showStats && (
-        <div className={counterStyles.overlay}>
+        <div
+          className={counterStyles.overlay}
+          onClick={e => {
+            // Clicking the backdrop (outside the card) acts as Back.
+            if (e.target === e.currentTarget) closeStats()
+          }}
+        >
           <div className={styles.previewModal}>
-            <StatsCardPreview
-              projectName={projectName}
-              sessionNumber={sessionNumber}
-              garmentType={garmentType}
-              size={size}
-              needleSize={needleSize}
-              gaugeStitches={gaugeStitches}
-              gaugeRows={gaugeRows}
-              stitchPattern={stitchPattern}
-              rowCount={rowCount}
-              totalKnittingTime={totalKnittingTime}
-              averageTimePerRow={averageTimePerRow}
-              dateLabel={dateLabel}
-            />
+            <StatsCard {...cardProps} />
             <div className={counterStyles.modalActions}>
               <button className={counterStyles.secondaryBtn} onClick={closeStats}>
                 Back
