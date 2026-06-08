@@ -1,73 +1,52 @@
-# React + TypeScript + Vite
+# Count Me In
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+We knitters always joke that we don't know how to count. I built Count Me In to help answer questions like: *"What row am I at?"* or *"Did I count the last row?"*
 
-Currently, two official plugins are available:
+### 🧶 [Try it live → countmein.pages.dev](https://countmein.pages.dev)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+---
 
-## React Compiler
+## What it does
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Count Me In is a small, focused web app for counting rows while you knit:
 
-## Expanding the ESLint configuration
+- **Onboarding** — name your project and capture the details (session number, garment type, size) before you start. Or skip it and start counting right away with sensible defaults.
+- **Counter** — increment with a click or the spacebar. Pause and reset whenever you need to.
+- **Timing insights** — every increment is timestamped, so the app can show how long ago you last counted, your average time per row, and gently ask *"Did you miss a row?"* when a gap looks unusual.
+- **Finish session** — wrap up with a downloadable, gauge-swatch-style stats card summarizing your session.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Tech stack
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+- **React 19** + **TypeScript**
+- **Vite** for dev/build tooling
+- **CSS Modules** for styling
+- **React Router** for navigation
+- **Vitest** + **React Testing Library** for component tests
+- Deployed on **Cloudflare Pages**
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Getting started
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+# install dependencies
+npm install
+
+# start the dev server (with hot reload)
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Then open the local URL Vite prints (usually http://localhost:5173).
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+## Available scripts
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+| Command              | What it does                                      |
+| -------------------- | ------------------------------------------------- |
+| `npm run dev`        | Start the Vite dev server with hot reload         |
+| `npm run build`      | Type-check and build for production into `dist/`  |
+| `npm run preview`    | Preview the production build locally              |
+| `npm run lint`       | Run ESLint across the project                     |
+| `npm run test`       | Run the test suite once                           |
+| `npm run test:watch` | Run tests in watch mode                           |
+
+## Deployment
+
+The app is deployed to [Cloudflare Pages](https://pages.cloudflare.com/). The `public/_redirects` file routes all paths to `index.html` so client-side routing (React Router) works on hard refreshes and deep links.
