@@ -1,19 +1,19 @@
 # Count Me In
 
-We knitters always joke that we don't know how to count. I built Count Me In to help answer questions like: *"What row am I at?"* or *"Did I count the last row?"*
+We knitters always joke that we don't know how to count. I have built **Count Me In** to help answer questions like: *"What row am I at?"* or *"Did I count the last row?"*.
 
-### 🧶 [Try it live → countmein.pages.dev](https://countmein.pages.dev)
+### 🧶 [Try it live → countmein.club](https://countmein.club)
 
 ---
 
 ## What it does
 
-Count Me In is a small, focused web app for counting rows while you knit:
+**Count Me In** is a small, focused web app for counting rows while you knit:
 
-- **Onboarding** — name your project and capture the details (session number, garment type, size) before you start. Or skip it and start counting right away with sensible defaults.
-- **Counter** — increment with a click or the spacebar. Pause and reset whenever you need to.
-- **Timing insights** — every increment is timestamped, so the app can show how long ago you last counted, your average time per row, and gently ask *"Did you miss a row?"* when a gap looks unusual.
-- **Finish session** — wrap up with a downloadable, gauge-swatch-style stats card summarizing your session.
+- **Onboarding** - name your project and capture the details (session number, garment type, size) before you start. Or skip it and start counting right away with sensible defaults.
+- **Counter** - increment with a click or the spacebar. Pause and reset whenever you need to.
+- **Timing insights** - every increment is timestamped, so the app can show how long ago you last counted, your average time per row, and ask *"Did you miss a row?"* when a gap looks unusual.
+- **Finish session** - wrap up with a downloadable, notebook-style stats card summarizing your session.
 
 ## Tech stack
 
